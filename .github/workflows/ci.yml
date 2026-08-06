@@ -1,0 +1,38 @@
+name: CI & Quality Gate
+
+on:
+  pull_request:
+    branches:
+      - develop
+      - uat
+      - prod
+  push:
+    branches:
+      - develop
+
+jobs:
+  quality-check:
+    name: Build, Lint & Test Checks
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 1. Checkout Código
+        uses: actions/checkout@v4
+
+      - name: 2. Configurar Node.js (v22)
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: "npm"
+
+      - name: 3. Instalar Dependencias
+        run: npm ci
+
+      - name: 4. Verificación Estricta de TypeScript (Type Check)
+        run: npm run lint
+
+      - name: 5. Ejecutar Suite de Pruebas Unitarias (Vitest)
+        run: npm run test
+
+      - name: 6. Verificación de Compilación de Producción (Vite Build)
+        run: npm run build

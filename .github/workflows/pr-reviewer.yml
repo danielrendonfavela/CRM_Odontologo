@@ -1,0 +1,29 @@
+name: AI PR Reviewer
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+jobs:
+  ai-review:
+    name: AI PR Code Review
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
+
+    steps:
+      - name: 1. Checkout Código
+        uses: actions/checkout@v4
+
+      - name: 2. Configurar Node.js (v22)
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: 3. Ejecutar AI PR Reviewer Script
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+        run: node scripts/ai_pr_reviewer.js
