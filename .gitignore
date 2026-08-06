@@ -5,8 +5,7 @@ node_modules
 # Build output
 dist
 build
-.next
-out
+*.tsbuildinfo
 
 # Environment variables
 .env
@@ -29,3 +28,4 @@ Thumbs.db
 .firebase
 firebase-debug.log
 ui-debug.log
+
