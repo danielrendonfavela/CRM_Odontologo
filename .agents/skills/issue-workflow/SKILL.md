@@ -29,6 +29,34 @@ sequenceDiagram
 
 ---
 
+## 🎨 Paso 0: Inteligencia de Diseño Pre-Codificación (OBLIGATORIO)
+
+Antes de escribir una sola línea de código, todo subagente DEBE ejecutar los siguientes pasos:
+
+### 0.1 Leer Fuentes de Verdad de Diseño
+1. **`design-system/crm-odontologo/MASTER.md`** — Paleta de colores (slate + dorado `#D8C593`), tipografía (Inter + DM Sans), spacing tokens, shadow depths, anti-patrones y pre-delivery checklist.
+2. **`.agents/skills/clean-ui-architecture/SKILL.md`** — Arquitectura de 3 capas, Repository Pattern, manejo de errores de dominio, reglas de enrutamiento y estándares visuales UI UX Pro Max.
+
+### 0.2 Búsquedas Autónomas de UX & Stack (Opcional pero Recomendado)
+El subagente PUEDE ejecutar búsquedas específicas del skill `ui-ux-pro-max` para obtener directrices tácticas relevantes a su componente:
+
+```bash
+# Tips de UX para el componente (loading states, animaciones, accesibilidad)
+python .agents/skills/ui-ux-pro-max/scripts/search.py "<keywords del componente>" --domain ux
+
+# Mejores prácticas de React para el componente (hooks, performance, state)
+python .agents/skills/ui-ux-pro-max/scripts/search.py "<keywords del componente>" --stack react
+```
+
+### 0.3 Reglas Visuales No Negociables
+- **Iconos:** Lucide React SVG. PROHIBIDO usar emojis como iconos en la UI.
+- **Targets Táctiles:** `min-h-[44px]` en botones, inputs y celdas interactivas.
+- **Transiciones:** `transition-all duration-200` (150-300ms). Cero cambios instantáneos.
+- **Cursor:** `cursor-pointer` en todo elemento clickeable.
+- **Dev Jargon:** PROHIBIDO. Cero badges de "Multi-tenant", "RBAC", "Infraestructura", etc.
+
+---
+
 ## 📋 Protocolo de Revisión Técnica & Autocorrección
 
 1. **Revisión Técnica 100% Automatizada:**
