@@ -1,3 +1,4 @@
+import { IncognitoBanner } from './components/IncognitoBanner';
 import { useState, useEffect } from "react";
 import {
   Activity,
@@ -37,7 +38,7 @@ export default function App() {
   // Datos mock para demo inicial del Dashboard
   const currentClinic = {
     id: "clinic-dental-01",
-    name: "Consultorio Odontológico DentalCare Pro",
+    name: "Consultorio Odontolï¿½gico DentalCare Pro",
     taxId: "RFC-ODO-892011-9A2",
     phone: "+52 55 9876 5432",
     email: "contacto@dentalcarepro.com",
@@ -45,7 +46,7 @@ export default function App() {
   };
 
   const currentUser = {
-    displayName: "Dr. Roberto Gómez",
+    displayName: "Dr. Roberto Gï¿½mez",
     email: "dr.gomez@dentalcarepro.com",
     role: "admin" as UserRole,
     clinicId: currentClinic.id,
@@ -55,7 +56,7 @@ export default function App() {
     {
       id: "pat-101",
       clinicId: currentClinic.id,
-      fullName: "Ana María Lucero",
+      fullName: "Ana Marï¿½a Lucero",
       documentId: "CURP-LUA920312",
       phone: "+52 55 1234 5678",
       email: "ana.lucero@email.com",
@@ -77,7 +78,7 @@ export default function App() {
     {
       id: "pat-103",
       clinicId: currentClinic.id,
-      fullName: "Elena Patricia Ramírez",
+      fullName: "Elena Patricia Ramï¿½rez",
       documentId: "CURP-RAE951104",
       phone: "+52 55 4567 8901",
       email: "elena.ramirez@email.com",
@@ -92,13 +93,13 @@ export default function App() {
       id: "quot-301",
       clinicId: currentClinic.id,
       patientId: "pat-101",
-      patientName: "Ana María Lucero",
+      patientName: "Ana Marï¿½a Lucero",
       createdByUid: "usr-01",
-      createdByName: "Dr. Roberto Gómez",
+      createdByName: "Dr. Roberto Gï¿½mez",
       items: [
         {
           id: "item-1",
-          treatmentName: "Diseño de Sonrisa & Carillas de Porcelana",
+          treatmentName: "Diseï¿½o de Sonrisa & Carillas de Porcelana",
           toothNumber: 11,
           unitPrice: 4500,
           quantity: 6,
@@ -129,7 +130,7 @@ export default function App() {
       patientId: "pat-102",
       patientName: "Carlos Eduardo Silva",
       createdByUid: "usr-01",
-      createdByName: "Dr. Roberto Gómez",
+      createdByName: "Dr. Roberto Gï¿½mez",
       items: [
         {
           id: "item-3",
@@ -157,7 +158,7 @@ export default function App() {
       id: "acc-501",
       clinicId: currentClinic.id,
       type: "income",
-      category: "Tratamiento Odontológico",
+      category: "Tratamiento Odontolï¿½gico",
       amount: 25500,
       description: "Pago Inicial Carillas Porcelana - Ana Lucero",
       date: "2026-08-04",
@@ -172,9 +173,9 @@ export default function App() {
       id: "acc-502",
       clinicId: currentClinic.id,
       type: "expense",
-      category: "Material Quirúrgico & Resinas",
+      category: "Material Quirï¿½rgico & Resinas",
       amount: 4200,
-      description: "Compra insumos de resina 3M y anestésicos",
+      description: "Compra insumos de resina 3M y anestï¿½sicos",
       date: "2026-08-05",
       createdByUid: "usr-01",
       paymentMethod: "transfer",
@@ -184,7 +185,7 @@ export default function App() {
   ];
 
   useEffect(() => {
-    // Validar estado de la inicialización de Firebase
+    // Validar estado de la inicializaciï¿½n de Firebase
     setFirebaseStatus({
       authReady: Boolean(auth),
       dbReady: Boolean(db),
@@ -203,7 +204,7 @@ export default function App() {
             </div>
             <div>
               <div className="flex items-center space-x-2">
-                <h1 className="font-bold text-lg text-white leading-none">CRM Odontológico</h1>
+                <h1 className="font-bold text-lg text-white leading-none">CRM Odontolï¿½gico</h1>
                 <span className="text-xs font-semibold px-2 py-0.5 rounded-full bg-cyan-500/10 text-cyan-400 border border-cyan-500/20">
                   Multi-tenant v1.0
                 </span>
@@ -242,7 +243,7 @@ export default function App() {
       {/* Main Container */}
       <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
         
-        {/* Banner de Verificación de Servicios Firebase */}
+        {/* Banner de Verificaciï¿½n de Servicios Firebase */}
         <section className="glass-card rounded-2xl p-5 border border-slate-800 bg-gradient-to-r from-slate-900 via-slate-900/90 to-indigo-950/40 shadow-xl">
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
             <div className="flex items-center space-x-3">
@@ -255,7 +256,7 @@ export default function App() {
                   <Sparkles className="w-4 h-4 text-amber-400 animate-pulse" />
                 </h2>
                 <p className="text-xs text-slate-400 mt-0.5">
-                  Conexión directa aislada en path: <code className="text-cyan-400 font-mono">/clinics/{currentClinic.id}</code>
+                  Conexiï¿½n directa aislada en path: <code className="text-cyan-400 font-mono">/clinics/{currentClinic.id}</code>
                 </p>
               </div>
             </div>
@@ -304,7 +305,7 @@ export default function App() {
             <p className="text-2xl font-bold text-white mt-3">{sampleQuotes.length}</p>
             <div className="flex items-center space-x-1 text-slate-400 text-xs mt-2">
               <Clock className="w-3.5 h-3.5 text-amber-400" />
-              <span>1 Aprobada • 1 Enviada</span>
+              <span>1 Aprobada ï¿½ 1 Enviada</span>
             </div>
           </div>
 
@@ -386,7 +387,7 @@ export default function App() {
                 }`}
               >
                 <Building2 className="w-4 h-4" />
-                <span>Configuración Tenant</span>
+                <span>Configuraciï¿½n Tenant</span>
               </button>
             </div>
 
@@ -413,7 +414,7 @@ export default function App() {
               <div className="p-5 border-b border-slate-800/80 flex items-center justify-between">
                 <div>
                   <h3 className="font-semibold text-sm text-white">Directorio de Pacientes del Consultorio</h3>
-                  <p className="text-xs text-slate-400 mt-0.5">Almacenados bajo la colección tenant aislada</p>
+                  <p className="text-xs text-slate-400 mt-0.5">Almacenados bajo la colecciï¿½n tenant aislada</p>
                 </div>
                 <span className="text-xs text-slate-400 font-mono">Total: {samplePatients.length}</span>
               </div>
@@ -423,9 +424,9 @@ export default function App() {
                   <thead className="bg-slate-900/60 text-slate-400 border-b border-slate-800 font-semibold">
                     <tr>
                       <th className="p-4">Nombre Completo</th>
-                      <th className="p-4">Identificación</th>
-                      <th className="p-4">Teléfono</th>
-                      <th className="p-4">Correo Electrónico</th>
+                      <th className="p-4">Identificaciï¿½n</th>
+                      <th className="p-4">Telï¿½fono</th>
+                      <th className="p-4">Correo Electrï¿½nico</th>
                       <th className="p-4">Fecha de Registro</th>
                       <th className="p-4 text-right">Acciones</th>
                     </tr>
@@ -467,7 +468,7 @@ export default function App() {
                   <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-800/80 pb-4">
                     <div>
                       <div className="flex items-center space-x-3">
-                        <h4 className="font-bold text-base text-white">Cotización {quote.id}</h4>
+                        <h4 className="font-bold text-base text-white">Cotizaciï¿½n {quote.id}</h4>
                         <span
                           className={`px-2.5 py-0.5 rounded-full text-[11px] font-semibold border ${
                             quote.status === "approved"
@@ -479,7 +480,7 @@ export default function App() {
                         </span>
                       </div>
                       <p className="text-xs text-slate-400 mt-1">
-                        Paciente: <strong className="text-slate-200">{quote.patientName}</strong> • Atendido por: {quote.createdByName}
+                        Paciente: <strong className="text-slate-200">{quote.patientName}</strong> ï¿½ Atendido por: {quote.createdByName}
                       </p>
                     </div>
 
@@ -522,7 +523,7 @@ export default function App() {
               <div className="flex items-center justify-between border-b border-slate-800 pb-4">
                 <div>
                   <h3 className="font-semibold text-sm text-white">Registro de Ingresos & Egresos del Consultorio</h3>
-                  <p className="text-xs text-slate-400 mt-0.5">Módulo financiero restringido con RBAC para Contadores y Admins</p>
+                  <p className="text-xs text-slate-400 mt-0.5">Mï¿½dulo financiero restringido con RBAC para Contadores y Admins</p>
                 </div>
                 <div className="flex items-center space-x-2">
                   <span className="text-xs px-2.5 py-1 rounded-md bg-purple-500/10 text-purple-400 border border-purple-500/20 font-mono">
@@ -550,7 +551,7 @@ export default function App() {
                       <div>
                         <p className="text-xs font-semibold text-slate-200">{rec.description}</p>
                         <p className="text-[11px] text-slate-400 mt-0.5">
-                          Categoría: <span className="text-slate-300">{rec.category}</span> • Método: <span className="capitalize">{rec.paymentMethod}</span>
+                          Categorï¿½a: <span className="text-slate-300">{rec.category}</span> ï¿½ Mï¿½todo: <span className="capitalize">{rec.paymentMethod}</span>
                         </p>
                       </div>
                     </div>
@@ -571,12 +572,12 @@ export default function App() {
             </div>
           )}
 
-          {/* Tab Content: Configuración Tenant */}
+          {/* Tab Content: Configuraciï¿½n Tenant */}
           {activeTab === "tenant" && (
             <div className="glass-card rounded-2xl p-6 border border-slate-800 space-y-6">
               <div className="border-b border-slate-800 pb-4">
-                <h3 className="font-semibold text-sm text-white">Configuración del Consultorio & Multi-Tenancy</h3>
-                <p className="text-xs text-slate-400 mt-0.5">Estructura jerárquica de Firestore y aislamiento de datos</p>
+                <h3 className="font-semibold text-sm text-white">Configuraciï¿½n del Consultorio & Multi-Tenancy</h3>
+                <p className="text-xs text-slate-400 mt-0.5">Estructura jerï¿½rquica de Firestore y aislamiento de datos</p>
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -584,7 +585,7 @@ export default function App() {
                   <h4 className="text-xs font-bold text-cyan-400 uppercase tracking-wider">Datos del Consultorio (Tenant)</h4>
                   <div className="space-y-2 text-xs">
                     <div className="flex justify-between py-1 border-b border-slate-800">
-                      <span className="text-slate-400">ID de Clínica:</span>
+                      <span className="text-slate-400">ID de Clï¿½nica:</span>
                       <span className="font-mono text-cyan-300 font-semibold">{currentClinic.id}</span>
                     </div>
                     <div className="flex justify-between py-1 border-b border-slate-800">
@@ -596,7 +597,7 @@ export default function App() {
                       <span className="text-slate-200">{currentClinic.taxId}</span>
                     </div>
                     <div className="flex justify-between py-1 border-b border-slate-800">
-                      <span className="text-slate-400">Teléfono:</span>
+                      <span className="text-slate-400">Telï¿½fono:</span>
                       <span className="text-slate-200">{currentClinic.phone}</span>
                     </div>
                     <div className="flex justify-between py-1">
@@ -609,11 +610,11 @@ export default function App() {
                 <div className="bg-slate-900/60 rounded-xl p-5 border border-slate-800 space-y-3">
                   <h4 className="text-xs font-bold text-purple-400 uppercase tracking-wider">Reglas de Firestore (Seguridad)</h4>
                   <p className="text-xs text-slate-400">
-                    Todas las solicitudes están protegidas por reglas que restringen lectura y escritura exclusivamente a:
+                    Todas las solicitudes estï¿½n protegidas por reglas que restringen lectura y escritura exclusivamente a:
                   </p>
                   <ul className="text-xs space-y-1.5 text-slate-300 list-disc list-inside pt-1">
-                    <li><code className="text-cyan-300 font-mono">/clinics/{`{clinicId}`}</code> como la raíz del tenant.</li>
-                    <li>Verificación de usuario activo en subcolección <code className="text-cyan-300 font-mono">/users/{`{userId}`}</code>.</li>
+                    <li><code className="text-cyan-300 font-mono">/clinics/{`{clinicId}`}</code> como la raï¿½z del tenant.</li>
+                    <li>Verificaciï¿½n de usuario activo en subcolecciï¿½n <code className="text-cyan-300 font-mono">/users/{`{userId}`}</code>.</li>
                     <li>Roles estritos RBAC: <span className="text-cyan-400 font-semibold">admin</span>, <span className="text-cyan-400 font-semibold">assistant</span>, <span className="text-cyan-400 font-semibold">accountant</span>.</li>
                   </ul>
                 </div>
@@ -625,8 +626,9 @@ export default function App() {
 
       {/* Footer */}
       <footer className="border-t border-slate-900 bg-slate-950 py-6 text-center text-xs text-slate-500">
-        <p>© 2026 CRM Odontológico Multi-Tenant • React 18, Vite & Firebase Cloud Infrastructure</p>
+        <p>ï¿½ 2026 CRM Odontolï¿½gico Multi-Tenant ï¿½ React 18, Vite & Firebase Cloud Infrastructure</p>
       </footer>
+      <IncognitoBanner />
     </div>
   );
 }
