@@ -1,0 +1,45 @@
+name: Deploy UAT Environment
+
+on:
+  push:
+    branches:
+      - uat
+
+jobs:
+  deploy_uat:
+    name: Deploy to Firebase UAT
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 1. Checkout Código
+        uses: actions/checkout@v4
+
+      - name: 2. Configurar Node.js (v22)
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: "npm"
+
+      - name: 3. Instalar Dependencias
+        run: npm ci
+
+      - name: 4. Ejecutar Pruebas Unitarias
+        run: npm run test
+
+      - name: 5. Compilación de Producción (UAT Build)
+        run: npm run build
+        env:
+          VITE_FIREBASE_API_KEY: ${{ secrets.VITE_FIREBASE_API_KEY_UAT }}
+          VITE_FIREBASE_AUTH_DOMAIN: ${{ secrets.VITE_FIREBASE_AUTH_DOMAIN_UAT }}
+          VITE_FIREBASE_PROJECT_ID: ${{ secrets.VITE_FIREBASE_PROJECT_ID_UAT }}
+          VITE_FIREBASE_STORAGE_BUCKET: ${{ secrets.VITE_FIREBASE_STORAGE_BUCKET_UAT }}
+          VITE_FIREBASE_MESSAGING_SENDER_ID: ${{ secrets.VITE_FIREBASE_MESSAGING_SENDER_ID_UAT }}
+          VITE_FIREBASE_APP_ID: ${{ secrets.VITE_FIREBASE_APP_ID_UAT }}
+
+      - name: 6. Despliegue a Firebase Hosting UAT
+        uses: FirebaseExtended/action-hosting-deploy@v0
+        with:
+          repoToken: "${{ secrets.GITHUB_TOKEN }}"
+          firebaseServiceAccount: "${{ secrets.FIREBASE_SERVICE_ACCOUNT_CRM_ODONTOLOGO_UAT }}"
+          channelId: live
+          target: uat
