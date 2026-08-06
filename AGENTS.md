@@ -32,6 +32,7 @@ Bienvenido al proyecto **CRM ODONTÓLOGO**. Este archivo contiene el contexto fu
 src/
   ├── components/      # Componentes UI reutilizables genéricos (Button, Input, Modal, Table)
   ├── features/        # Módulos aislados por área de negocio (Domain Driven)
+  │     ├── auth/           # Login con Google, sesión, guardias de ruta
   │     ├── quotes/         # Editor estilo Canva, generador de PDF, vistas de presupuesto
   │     ├── patients/       # CRM de pacientes y expedientes
   │     ├── accounting/     # Ingresos, egresos, reportes de utilidades
@@ -46,8 +47,8 @@ src/
 
 ## 📜 Reglas de Gobernanza e Ingeniería (OBLIGATORIAS)
 
-1. **Flujo Automatizado de Issues & PRs (`issue-workflow`)**:
-   - Todo Bug o User Story detectado debe primero **registrarse como Issue en GitHub** con criterios de aceptación.
+1. **Flujo Automatizado de Issues Enriquecidos (`issue-specification-standard`)**:
+   - Todo Bug o User Story detectado debe **registrarse en GitHub cumpliendo las 6 dimensiones**: Contexto, Ubicación Exacta de Archivos/Interfaces TS, Criterios de Aceptación BDD (Given-When-Then), NFRs/Performance, Vitest Specs y Definition of Done (DoD).
    - El trabajo de código se delega a un **Subagente en un Git Worktree aislado** (`Workspace: 'share'`) bajo la rama `fix/issue-XX` o `feature/issue-XX`.
 
 2. **Cero Auto-Merge / Cero Push Directo a `develop`, `uat` o `prod`**:
