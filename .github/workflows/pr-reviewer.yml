@@ -3,6 +3,11 @@ name: AI PR Reviewer
 on:
   pull_request:
     types: [opened, synchronize, reopened]
+  workflow_dispatch:
+    inputs:
+      pr_number:
+        description: 'Número de Pull Request a auditar'
+        required: true
 
 jobs:
   ai-review:
@@ -24,6 +29,6 @@ jobs:
       - name: 3. Ejecutar AI PR Reviewer Script
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          PR_NUMBER: ${{ github.event.pull_request.number }}
+          PR_NUMBER: ${{ github.event.inputs.pr_number || github.event.pull_request.number }}
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
         run: node scripts/ai_pr_reviewer.js
