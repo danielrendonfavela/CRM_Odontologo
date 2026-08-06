@@ -61,12 +61,17 @@ async function runReview() {
     auditResults.push("❌ **Clean UI Architecture:** Se detectó importación directa de Firebase Firestore dentro de un componente React UI (`src/features/.../components/`). Debe desacoplarse a un servicio en `src/services/`.");
   }
 
-  // Check 4: Verificación de Registro SDD en docs/specs/
+  // Check 4: Big-O Complexity Audit (Prohibido O(N^2) bucles anidados o .find()/.filter() dentro de .map())
+  if (/\+.*\.map\(.*\.find\(/i.test(diff) || /\+.*\.map\(.*\.filter\(/i.test(diff) || /\+.*\.forEach\(.*\.forEach\(/i.test(diff)) {
+    auditResults.push("❌ **Complejidad Algorítmica O(N^2):** Se detectó iteración anidada (.find()/.filter() dentro de .map()). Reemplazar por Tabla Hash / Record / Map O(1) para garantizar O(N) lineal máximo.");
+  }
+
+  // Check 5: Verificación de Registro SDD en docs/specs/
   if (!/docs\/specs\/.*sdd\.md/i.test(diff)) {
     auditResults.push("⚠️ **Documentación SDD:** No se detectó la creación de un documento SDD en `docs/specs/0XX-issue-XX-sdd.md` para registrar las decisiones técnicas.");
   }
 
-  // Check 5: Performance & Web Vitals Audit
+  // Check 6: Performance & Web Vitals Audit
   if (/\+.*<img\s+(?!.*loading=['"]lazy['"])/i.test(diff)) {
     auditResults.push("💡 **Performance Note:** Se detectaron etiquetas `<img>` sin atributo `loading=\"lazy\"`. Recomienda usar `loading=\"lazy\"` para optimizar LCP.");
   }
@@ -76,7 +81,7 @@ async function runReview() {
   // 3. Generar reporte detallado
   const staticAuditReport = auditResults.length > 0 
     ? auditResults.map((r) => `- ${r}`).join("\n") 
-    : "✅ Todas las verificaciones estáticas (TypeScript, Clean Architecture, Performance y SDD) pasaron limpiamente sin hallazgos.";
+    : "✅ Todas las verificaciones estáticas (TypeScript, Clean Architecture, Big-O Complexity O(1)/O(N), Performance y SDD) pasaron limpiamente sin hallazgos.";
 
   const prompt = `Eres un Senior Staff Software Engineer y Arquitecto Principal para "CRM Odontólogo".
 
@@ -107,7 +112,7 @@ ${staticAuditReport}
 Escribe una revisión formal en Markdown con las siguientes secciones:
 1. 📊 **Resumen del PR**: Resumen conciso de los cambios.
 2. 📐 **Cumplimiento de Arquitectura & Clean UI**: Desacoplamiento de servicios vs UI (SRP).
-3. ⚡ **Performance & Web Vitals Audit**: Evaluación de LCP, INP (<50ms), CLS=0 y optimización de memoria.
+3. ⚡ **Performance & Complejidad Algorítmica Big-O**: Evaluación de O(1) Hash Maps vs O(N), INP (<50ms), CLS=0 y optimización de memoria.
 4. 🗄️ **Base de Datos & Versionado**: Verificación de schemaVersion y reglas Firestore.
 5. 🧪 **Testing & Cobertura**: Evaluación de pruebas unitarias en Vitest.
 6. ⚖️ **Veredicto Final**: ${verdict} con justificación explícita.`;
@@ -116,11 +121,12 @@ Escribe una revisión formal en Markdown con las siguientes secciones:
     console.log("⚠️ GEMINI_API_KEY no configurada. Publicando reporte de auditoría estática enriquecida.");
     const formattedComment = `### 🤖 AI PR Reviewer & Quality Gate (Enriched Static & Architecture Audit)
 
-#### 📊 Estado de Auditoría de Arquitectura, Performance & Calidad
+#### 📊 Estado de Auditoría de Arquitectura, Complejidad Algorítmica & Calidad
 ${staticAuditReport}
 
 ---
 #### 📐 Verificaciones Aplicadas:
+- 🟢 **Complejidad Algorítmica:** Garantía de acceso $O(1)$ por Hash Maps / Prohibición de bucles anidados $O(N^2)$.
 - 🟢 **Clean UI Architecture:** Desacoplamiento de Firebase en componentes UI.
 - 🟢 **Performance & Web Vitals:** Verificación de LCP <1s, INP <50ms y carga lazy.
 - 🟢 **TypeScript Estricto:** Prohibición de tipos \`any\`.
