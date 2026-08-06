@@ -1,0 +1,59 @@
+rules_version = "2";
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Función auxiliar para obtener datos del usuario dentro de la clínica tenant
+    function getClinicUser(clinicId) {
+      return get(/databases/$(database)/documents/clinics/$(clinicId)/users/$(request.auth.uid)).data;
+    }
+
+    // Verificar si el usuario pertenece a la clínica y está activo
+    function isClinicUser(clinicId) {
+      return request.auth != null &&
+        exists(/databases/$(database)/documents/clinics/$(clinicId)/users/$(request.auth.uid)) &&
+        getClinicUser(clinicId).active == true;
+    }
+
+    // Comprobación RBAC (Role-Based Access Control)
+    function hasRole(clinicId, role) {
+      return isClinicUser(clinicId) && getClinicUser(clinicId).role == role;
+    }
+
+    function isAdmin(clinicId) {
+      return hasRole(clinicId, "admin");
+    }
+
+    function isAccountantOrAdmin(clinicId) {
+      return isClinicUser(clinicId) && (getClinicUser(clinicId).role == "accountant" || getClinicUser(clinicId).role == "admin");
+    }
+
+    // Aislamiento Multi-tenant estricto bajo el path /clinics/{clinicId}
+    match /clinics/{clinicId} {
+      // Acceso al documento raíz de la clínica
+      allow read: if isClinicUser(clinicId);
+      allow write: if isAdmin(clinicId);
+
+      // Usuarios del Tenant
+      match /users/{userId} {
+        allow read: if isClinicUser(clinicId);
+        allow write: if isAdmin(clinicId);
+      }
+
+      // Pacientes del Tenant
+      match /patients/{patientId} {
+        allow read, write: if isClinicUser(clinicId);
+      }
+
+      // Cotizaciones del Tenant
+      match /quotes/{quoteId} {
+        allow read, write: if isClinicUser(clinicId);
+      }
+
+      // Registros Contables del Tenant (Solo Admin y Accountant)
+      match /accounting/{recordId} {
+        allow read, write: if isAccountantOrAdmin(clinicId);
+      }
+    }
+  }
+}
+
