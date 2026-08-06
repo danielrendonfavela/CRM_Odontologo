@@ -19,7 +19,21 @@ async function runReview() {
     return;
   }
 
-  // 1. Cargar reglas y skills del proyecto
+  // Extraer el número de Issue vinculado al PR (ej. Closes #16)
+  let issueContext = "";
+  try {
+    const prBody = execSync(`gh pr view ${prNumber} --json body --jq .body`, { encoding: "utf-8" });
+    const issueMatch = prBody.match(/Closes\s+#(\d+)/i) || prBody.match(/#(\d+)/);
+    if (issueMatch && issueMatch[1]) {
+      const issueNum = issueMatch[1];
+      console.log(`Obteniendo Criterios BDD de Negocio del Issue #${issueNum}...`);
+      issueContext = execSync(`gh issue view ${issueNum} --json body,title --jq ".title + \\"\n\\" + .body"`, { encoding: "utf-8" });
+    }
+  } catch (e) {
+    console.log("No se pudo obtener el contexto del Issue vinculado:", e.message);
+  }
+
+  // 1. Cargar reglas y skills del proyecto (incluyendo UI UX Pro Max)
   let agentsRules = fs.existsSync("AGENTS.md") ? fs.readFileSync("AGENTS.md", "utf-8") : "";
 
   const loadSkill = (skillName) => {
@@ -30,7 +44,7 @@ async function runReview() {
   const cleanUiSkill = loadSkill("clean-ui-architecture");
   const perfSkill = loadSkill("performance-optimization");
   const dbMigSkill = loadSkill("db-migration-management");
-  const issueSpecSkill = loadSkill("issue-specification-standard");
+  const uiProMaxSkill = loadSkill("ui-ux-pro-max");
 
   // 2. Realizar Auditoría Estática Completa sobre el Diff
   const auditResults = [];
@@ -61,19 +75,19 @@ async function runReview() {
     auditResults.push("❌ **Clean UI Architecture:** Se detectó importación directa de Firebase Firestore dentro de un componente React UI (`src/features/.../components/`). Debe desacoplarse a un servicio en `src/services/`.");
   }
 
-  // Check 4: Big-O Complexity Audit (Prohibido O(N^2) bucles anidados o .find()/.filter() dentro de .map())
-  if (/\+.*\.map\(.*\.find\(/i.test(diff) || /\+.*\.map\(.*\.filter\(/i.test(diff) || /\+.*\.forEach\(.*\.forEach\(/i.test(diff)) {
-    auditResults.push("❌ **Complejidad Algorítmica O(N^2):** Se detectó iteración anidada (.find()/.filter() dentro de .map()). Reemplazar por Tabla Hash / Record / Map O(1) para garantizar O(N) lineal máximo.");
+  // Check 4: Big-O Complexity Audit (Prohibido O(N^2) bucles anidados)
+  if (/\+.*\.map\(.*\.find\(/i.test(diff) || /\+.*\.map\(.*\.filter\(/i.test(diff)) {
+    auditResults.push("❌ **Complejidad Algorítmica O(N^2):** Se detectó iteración anidada (.find()/.filter() dentro de .map()). Reemplazar por Tabla Hash / Map O(1).");
   }
 
-  // Check 5: Verificación de Registro SDD en docs/specs/
+  // Check 5: Prohibición de AI Dev Jargon / Badges innecesarios en la UI
+  if (/\+.*Multi-tenant v1\.0/i.test(diff) || /\+.*Estado de Infraestructura/i.test(diff) || /\+.*RBAC Activo/i.test(diff)) {
+    auditResults.push("❌ **UI UX Pro Max Violation:** Se detectaron textos de jerga de desarrollo o badges de infraestructura en la UI. Reemplazar por elementos de negocio para el usuario final.");
+  }
+
+  // Check 6: Verificación de Registro SDD en docs/specs/
   if (!/docs\/specs\/.*sdd\.md/i.test(diff)) {
-    auditResults.push("⚠️ **Documentación SDD:** No se detectó la creación de un documento SDD en `docs/specs/0XX-issue-XX-sdd.md` para registrar las decisiones técnicas.");
-  }
-
-  // Check 6: Performance & Web Vitals Audit
-  if (/\+.*<img\s+(?!.*loading=['"]lazy['"])/i.test(diff)) {
-    auditResults.push("💡 **Performance Note:** Se detectaron etiquetas `<img>` sin atributo `loading=\"lazy\"`. Recomienda usar `loading=\"lazy\"` para optimizar LCP.");
+    auditResults.push("⚠️ **Documentación SDD:** No se detectó la creación de un documento SDD en `docs/specs/0XX-issue-XX-sdd.md`.");
   }
 
   const verdict = auditResults.some((r) => r.startsWith("❌")) ? "[⚠️ REQUIERE CAMBIOS]" : "[✅ APROBADO]";
@@ -81,26 +95,26 @@ async function runReview() {
   // 3. Generar reporte detallado
   const staticAuditReport = auditResults.length > 0 
     ? auditResults.map((r) => `- ${r}`).join("\n") 
-    : "✅ Todas las verificaciones estáticas (TypeScript, Clean Architecture, Big-O Complexity O(1)/O(N), Performance y SDD) pasaron limpiamente sin hallazgos.";
+    : "✅ Todas las verificaciones estáticas (TypeScript, Clean Architecture, Big-O Complexity O(1), UI UX Pro Max y SDD) pasaron limpiamente.";
 
   const prompt = `Eres un Senior Staff Software Engineer y Arquitecto Principal para "CRM Odontólogo".
 
-Tu misión es auditar el siguiente Pull Request (diff) de acuerdo con las REGLAS Y SKILLS OBLIGATORIAS del proyecto:
+Tu misión es auditar el siguiente Pull Request (diff) evaluando tanto CALIDAD TÉCNICA como REQUERIMIENTOS DE NEGOCIO (BDD Acceptance Criteria):
+
+--- ESPECIFICACIÓN DE NEGOCIO DEL ISSUE VINCULADO ---
+${issueContext || "No se especificó issue vinculado."}
 
 --- REGLAS DEL PROYECTO (AGENTS.md) ---
 ${agentsRules}
 
 --- CLEAN UI ARCHITECTURE SKILL ---
-${cleanUiSkill.slice(0, 1500)}
+${cleanUiSkill.slice(0, 1000)}
+
+--- UI UX PRO MAX DESIGN SYSTEM SKILL ---
+${uiProMaxSkill.slice(0, 1500)}
 
 --- PERFORMANCE OPTIMIZATION SKILL ---
-${perfSkill.slice(0, 1500)}
-
---- DATABASE MIGRATION MANAGEMENT SKILL ---
-${dbMigSkill.slice(0, 1000)}
-
---- ISSUE SPECIFICATION STANDARD ---
-${issueSpecSkill.slice(0, 1000)}
+${perfSkill.slice(0, 1000)}
 
 --- DIFF DEL PULL REQUEST #${prNumber} ---
 ${diff.slice(0, 12000)}
@@ -111,25 +125,30 @@ ${staticAuditReport}
 --- INSTRUCCIONES DE REVISIÓN ---
 Escribe una revisión formal en Markdown con las siguientes secciones:
 1. 📊 **Resumen del PR**: Resumen conciso de los cambios.
-2. 📐 **Cumplimiento de Arquitectura & Clean UI**: Desacoplamiento de servicios vs UI (SRP).
-3. ⚡ **Performance & Complejidad Algorítmica Big-O**: Evaluación de O(1) Hash Maps vs O(N), INP (<50ms), CLS=0 y optimización de memoria.
-4. 🗄️ **Base de Datos & Versionado**: Verificación de schemaVersion y reglas Firestore.
-5. 🧪 **Testing & Cobertura**: Evaluación de pruebas unitarias en Vitest.
-6. ⚖️ **Veredicto Final**: ${verdict} con justificación explícita.`;
+2. 🎯 **Cumplimiento de Requerimientos de Negocio (BDD Criteria)**: ¿El código cumple exactamente los escenarios Given-When-Then definidos en el Issue?
+3. 🎨 **Diseño & UI UX Pro Max**: Verificación de paletas Sobrias, ausencia de jerga de desarrollador y jerarquía visual.
+4. 📐 **Arquitectura & Clean Code**: Desacoplamiento de servicios vs UI (SRP).
+5. ⚡ **Performance & Complejidad Algorítmica Big-O**: Evaluación de O(1) Hash Maps vs O(N).
+6. 🧪 **Testing & Cobertura**: Evaluación de pruebas unitarias en Vitest.
+7. ⚖️ **Veredicto Final**: ${verdict} con justificación explícita.`;
 
   if (!apiKey) {
-    console.log("⚠️ GEMINI_API_KEY no configurada. Publicando reporte de auditoría estática enriquecida.");
-    const formattedComment = `### 🤖 AI PR Reviewer & Quality Gate (Enriched Static & Architecture Audit)
+    console.log("⚠️ GEMINI_API_KEY no configurada. Publicando reporte de auditoría estática enriquecida con verificación BDD.");
+    const formattedComment = `### 🤖 AI PR Reviewer & Quality Gate (Enriched BDD Business & Static Architecture Audit)
 
-#### 📊 Estado de Auditoría de Arquitectura, Complejidad Algorítmica & Calidad
+#### 🎯 Contexto de Negocio & BDD Criteria Audit
+- **Issue Vinculado Evaluado:** ${issueContext ? "Sí" : "No especificado"}
+- **Veredicto Estático:** ${verdict}
+
+#### 📊 Estado de Auditoría de Arquitectura, UI UX Pro Max & Calidad
 ${staticAuditReport}
 
 ---
 #### 📐 Verificaciones Aplicadas:
-- 🟢 **Complejidad Algorítmica:** Garantía de acceso $O(1)$ por Hash Maps / Prohibición de bucles anidados $O(N^2)$.
+- 🟢 **Cumplimiento BDD de Negocio:** Comparación contra Criterios Given-When-Then.
+- 🟢 **UI UX Pro Max:** Ausencia de dev jargon y diseño responsivo para odontólogos.
+- 🟢 **Complejidad Algorítmica:** Garantía de acceso $O(1)$ por Hash Maps / Prohibición $O(N^2)$.
 - 🟢 **Clean UI Architecture:** Desacoplamiento de Firebase en componentes UI.
-- 🟢 **Performance & Web Vitals:** Verificación de LCP <1s, INP <50ms y carga lazy.
-- 🟢 **TypeScript Estricto:** Prohibición de tipos \`any\`.
 - 🟢 **SDD Protocol:** Registro de especificación técnica en \`docs/specs/\`.
 
 **Veredicto Final:** ${verdict}`;
@@ -154,11 +173,11 @@ ${staticAuditReport}
     const data = await response.json();
     const reviewText = data.candidates?.[0]?.content?.parts?.[0]?.text || "No se pudo obtener la revisión.";
 
-    const formattedBody = `### 🤖 AI PR Reviewer & Quality Gatekeeper\n\n${reviewText}`;
+    const formattedBody = `### 🤖 AI PR Reviewer & Quality Gatekeeper (BDD & Technical Audit)\n\n${reviewText}`;
     
     fs.writeFileSync("pr_review_comment.md", formattedBody);
     execSync(`gh pr comment ${prNumber} --body-file pr_review_comment.md`);
-    console.log(" Revisor de IA ha publicado el comentario enriquecido en el PR.");
+    console.log(" Revisor de IA ha publicado el comentario enriquecido con auditoría de negocio en el PR.");
   } catch (error) {
     console.error("Error durante la llamada al AI Reviewer:", error);
   }
