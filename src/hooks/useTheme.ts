@@ -26,7 +26,7 @@ export const THEME_OPTIONS: ThemeOption[] = [
     id: "editorial",
     name: "Editorial Luxe",
     subtitle: "Odontología Estética",
-    badgeColor: "#EAB308",
+    badgeColor: "#E8A87C",
   },
 ];
 
