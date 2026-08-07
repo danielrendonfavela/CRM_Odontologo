@@ -1,4 +1,4 @@
-﻿import { useState } from "react";
+import { useState } from "react";
 import {
   Users,
   FileText,
@@ -177,6 +177,7 @@ export default function App() {
             onOpenMobileMenu={() => setIsMobileMenuOpen(true)}
             onViewLogin={signOut}
             onViewCanvas={() => setViewMode("canvas")}
+            onSignOut={signOut}
           />
 
           <div className="flex-1 flex overflow-hidden">

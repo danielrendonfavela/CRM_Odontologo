@@ -1,5 +1,5 @@
 import React from "react";
-import { Activity, Menu, LogIn, Eye, UserCheck } from "lucide-react";
+import { Activity, Menu, LogIn, Eye, UserCheck, LogOut } from "lucide-react";
 
 export interface HeaderNavProps {
   clinicName: string;
@@ -9,6 +9,7 @@ export interface HeaderNavProps {
   onOpenMobileMenu?: () => void;
   onViewLogin?: () => void;
   onViewCanvas?: () => void;
+  onSignOut?: () => void;
 }
 
 export const HeaderNav: React.FC<HeaderNavProps> = ({
@@ -19,6 +20,7 @@ export const HeaderNav: React.FC<HeaderNavProps> = ({
   onOpenMobileMenu,
   onViewLogin,
   onViewCanvas,
+  onSignOut,
 }) => {
   const getInitials = (name: string) => {
     const parts = name.trim().split(" ");
@@ -99,6 +101,18 @@ export const HeaderNav: React.FC<HeaderNavProps> = ({
                 </span>
               </div>
             </div>
+
+            {onSignOut && (
+              <button
+                type="button"
+                onClick={onSignOut}
+                title="Cerrar sesión"
+                className="p-2 min-h-[44px] min-w-[44px] flex items-center justify-center rounded-xl bg-rose-950/40 hover:bg-rose-900/60 text-rose-300 hover:text-rose-100 border border-rose-800/40 transition-colors cursor-pointer"
+                aria-label="Cerrar sesión"
+              >
+                <LogOut className="w-4 h-4" />
+              </button>
+            )}
           </div>
         </div>
       </div>
