@@ -1,4 +1,4 @@
-﻿import {
+import {
   signInWithPopup,
   GoogleAuthProvider,
   signOut as firebaseSignOut,
@@ -38,6 +38,15 @@ export const authService: AuthService = {
       const authError = error as { code?: string; message?: string };
       if (authError.code === "auth/popup-closed-by-user") {
         throw new Error("Autenticación cancelada por el usuario");
+      }
+      if (authError.code === "auth/api-key-not-valid" || authError.code === "auth/invalid-api-key") {
+        throw new Error("API Key de Firebase no válida. Revisa las variables en el archivo .env");
+      }
+      if (authError.code === "auth/operation-not-allowed") {
+        throw new Error("El proveedor de Google no está habilitado en la consola de Firebase");
+      }
+      if (authError.code === "auth/unauthorized-domain") {
+        throw new Error("El dominio actual (localhost) no está autorizado en Firebase Auth");
       }
       throw error;
     }
