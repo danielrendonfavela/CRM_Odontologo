@@ -1,43 +1,30 @@
-import { IncognitoBanner } from './components/IncognitoBanner';
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import {
-  Activity,
-  Shield,
   Users,
   FileText,
   DollarSign,
-  CheckCircle2,
-  Server,
-  UserCheck,
-  Sparkles,
   Clock,
   CreditCard,
-  Database,
-  Lock,
   Plus,
   TrendingUp,
   Search,
   ExternalLink,
-  LogIn,
-  Eye,
+  Calendar,
+  Settings,
+  CheckCircle2,
 } from "lucide-react";
-import { auth, db, storage } from "./config/firebase";
 import type { Patient, Quote, AccountingRecord, UserRole } from "./types/tenant";
 import { LoginView } from "./features/auth/components/LoginView";
 import { QuoteCanvas } from "./features/quotes/components/QuoteCanvas";
+import { HeaderNav } from "./components/HeaderNav";
+import { SidebarNav } from "./components/SidebarNav";
+import { IncognitoBanner } from "./components/IncognitoBanner";
 
 export default function App() {
   const [viewMode, setViewMode] = useState<"app" | "login" | "canvas">("app");
-  const [activeTab, setActiveTab] = useState<"patients" | "quotes" | "accounting" | "tenant">("patients");
-  const [firebaseStatus, setFirebaseStatus] = useState<{
-    authReady: boolean;
-    dbReady: boolean;
-    storageReady: boolean;
-  }>({
-    authReady: false,
-    dbReady: false,
-    storageReady: false,
-  });
+  const [activeTab, setActiveTab] = useState<string>("dashboard");
+  const [isSidebarCollapsed, setIsSidebarCollapsed] = useState<boolean>(false);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState<boolean>(false);
 
   const currentClinic = {
     id: "clinic-dental-01",
@@ -49,8 +36,8 @@ export default function App() {
   };
 
   const currentUser = {
-    displayName: "Dr. Roberto Gómez",
-    email: "dr.gomez@dentalcarepro.com",
+    displayName: "Dra. Daniela Cázares",
+    email: "dra.daniela@cazaresdental.com",
     role: "admin" as UserRole,
     clinicId: currentClinic.id,
   };
@@ -136,14 +123,6 @@ export default function App() {
     },
   ];
 
-  useEffect(() => {
-    setFirebaseStatus({
-      authReady: Boolean(auth),
-      dbReady: Boolean(db),
-      storageReady: Boolean(storage),
-    });
-  }, []);
-
   if (viewMode === "login") {
     return (
       <div className="min-h-screen bg-slate-950 flex flex-col justify-center items-center relative">
@@ -195,223 +174,124 @@ export default function App() {
 
   return (
     <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col font-sans">
-      {/* Top Navigation Bar */}
-      <header className="border-b border-slate-800 bg-slate-900/80 backdrop-blur-md sticky top-0 z-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-          <div className="flex items-center space-x-3">
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-cyan-500 to-blue-600 flex items-center justify-center shadow-lg shadow-cyan-500/20">
-              <Activity className="w-6 h-6 text-white" />
-            </div>
+      <HeaderNav
+        clinicName={currentClinic.name}
+        doctorName={currentUser.displayName}
+        doctorRole="Administrador"
+        onOpenMobileMenu={() => setIsMobileMenuOpen(true)}
+        onViewLogin={() => setViewMode("login")}
+        onViewCanvas={() => setViewMode("canvas")}
+      />
+
+      <div className="flex-1 flex overflow-hidden">
+        <SidebarNav
+          activeTab={activeTab}
+          onTabChange={(tabId) => setActiveTab(tabId)}
+          isCollapsed={isSidebarCollapsed}
+          onToggleCollapse={() => setIsSidebarCollapsed(!isSidebarCollapsed)}
+          isOpenMobile={isMobileMenuOpen}
+          onCloseMobile={() => setIsMobileMenuOpen(false)}
+        />
+
+        <main className="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8 space-y-6">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div>
-              <div className="flex items-center space-x-2">
-                <h1 className="font-bold text-lg text-white leading-none">CRM Odontológico</h1>
-                <span className="text-xs font-semibold px-2 py-0.5 rounded-full bg-cyan-500/10 text-cyan-400 border border-cyan-500/20">
-                  Multi-tenant v1.0
-                </span>
-              </div>
-              <p className="text-xs text-slate-400 mt-0.5">{currentClinic.name}</p>
-            </div>
-          </div>
-
-          <div className="flex items-center space-x-3">
-            {/* Selector de Vistas de Demo */}
-            <button
-              onClick={() => setViewMode("login")}
-              className="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-xs font-medium text-slate-200 border border-slate-700 flex items-center space-x-1.5"
-            >
-              <LogIn className="w-3.5 h-3.5 text-cyan-400" />
-              <span>Ver Login UI</span>
-            </button>
-
-            <button
-              onClick={() => setViewMode("canvas")}
-              className="px-3 py-1.5 rounded-lg bg-amber-500/10 hover:bg-amber-500/20 text-xs font-medium text-amber-300 border border-amber-500/20 flex items-center space-x-1.5"
-            >
-              <Eye className="w-3.5 h-3.5 text-amber-400" />
-              <span>Ver Canvas Cotización</span>
-            </button>
-
-            {/* Perfil de Usuario */}
-            <div className="flex items-center space-x-3 pl-3 border-l border-slate-800">
-              <div className="w-9 h-9 rounded-full bg-gradient-to-br from-purple-500 to-indigo-600 flex items-center justify-center text-white font-bold text-sm shadow-md">
-                DC
-              </div>
-              <div className="hidden md:block text-left">
-                <p className="text-xs font-semibold text-slate-200">Dra. Daniela Cázares</p>
-                <div className="flex items-center space-x-1">
-                  <UserCheck className="w-3 h-3 text-purple-400" />
-                  <span className="text-[10px] font-bold uppercase tracking-wider text-purple-400">
-                    {currentUser.role}
-                  </span>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </header>
-
-      {/* Main Container */}
-      <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
-        
-        {/* Banner de Verificación de Servicios Firebase */}
-        <section className="glass-card rounded-2xl p-5 border border-slate-800 bg-gradient-to-r from-slate-900 via-slate-900/90 to-indigo-950/40 shadow-xl">
-          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-            <div className="flex items-center space-x-3">
-              <div className="w-10 h-10 rounded-xl bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center text-indigo-400">
-                <Server className="w-5 h-5" />
-              </div>
-              <div>
-                <h2 className="text-sm font-semibold text-white flex items-center gap-2">
-                  Estado de Infraestructura Cloud & Firebase Multi-Tenant
-                  <Sparkles className="w-4 h-4 text-amber-400 animate-pulse" />
-                </h2>
-                <p className="text-xs text-slate-400 mt-0.5">
-                  Conexión directa aislada en path: <code className="text-cyan-400 font-mono">/clinics/{currentClinic.id}</code>
-                </p>
-              </div>
+              <h2 className="text-xl font-bold text-white capitalize">
+                {activeTab === "dashboard" && "Resumen del Consultorio"}
+                {activeTab === "patients" && "Pacientes & Expedientes"}
+                {activeTab === "quotes" && "Cotizaciones & Presupuestos"}
+                {activeTab === "schedule" && "Agenda de Citas"}
+                {activeTab === "accounting" && "Contabilidad & Finanzas"}
+                {activeTab === "settings" && "Configuración del Consultorio"}
+              </h2>
+              <p className="text-xs text-slate-400 mt-1">
+                Bienvenida de nuevo, Dra. Daniela Cázares
+              </p>
             </div>
 
-            <div className="flex flex-wrap items-center gap-3">
-              <div className="flex items-center space-x-2 px-3 py-1.5 rounded-lg bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-xs">
-                <CheckCircle2 className="w-4 h-4" />
-                <span>Auth: {firebaseStatus.authReady ? "Conectado" : "Simulado"}</span>
-              </div>
-              <div className="flex items-center space-x-2 px-3 py-1.5 rounded-lg bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-xs">
-                <Database className="w-4 h-4" />
-                <span>Firestore: {firebaseStatus.dbReady ? "Aislado (Tenant)" : "Simulado"}</span>
-              </div>
-              <div className="flex items-center space-x-2 px-3 py-1.5 rounded-lg bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-xs">
-                <Lock className="w-4 h-4" />
-                <span>Storage: {firebaseStatus.storageReady ? "Protegido" : "Simulado"}</span>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {/* Metric Cards */}
-        <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
-          <div className="glass-card rounded-2xl p-5 border border-slate-800 hover:border-slate-700 transition-all duration-300">
-            <div className="flex items-center justify-between">
-              <span className="text-xs font-medium text-slate-400">Total Pacientes</span>
-              <div className="p-2 rounded-xl bg-blue-500/10 text-blue-400 border border-blue-500/20">
-                <Users className="w-5 h-5" />
-              </div>
-            </div>
-            <p className="text-2xl font-bold text-white mt-3">{samplePatients.length}</p>
-            <div className="flex items-center space-x-1 text-emerald-400 text-xs mt-2">
-              <TrendingUp className="w-3.5 h-3.5" />
-              <span>+12% este mes</span>
-            </div>
-          </div>
-
-          <div className="glass-card rounded-2xl p-5 border border-slate-800 hover:border-slate-700 transition-all duration-300">
-            <div className="flex items-center justify-between">
-              <span className="text-xs font-medium text-slate-400">Cotizaciones Creadas</span>
-              <div className="p-2 rounded-xl bg-amber-500/10 text-amber-400 border border-amber-500/20">
-                <FileText className="w-5 h-5" />
-              </div>
-            </div>
-            <p className="text-2xl font-bold text-white mt-3">{sampleQuotes.length}</p>
-            <div className="flex items-center space-x-1 text-slate-400 text-xs mt-2">
-              <Clock className="w-3.5 h-3.5 text-amber-400" />
-              <span>1 Aprobada · 1 Enviada</span>
-            </div>
-          </div>
-
-          <div className="glass-card rounded-2xl p-5 border border-slate-800 hover:border-slate-700 transition-all duration-300">
-            <div className="flex items-center justify-between">
-              <span className="text-xs font-medium text-slate-400">Ingresos Mensuales</span>
-              <div className="p-2 rounded-xl bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
-                <DollarSign className="w-5 h-5" />
-              </div>
-            </div>
-            <p className="text-2xl font-bold text-white mt-3">$25,500.00 MXN</p>
-            <div className="flex items-center space-x-1 text-emerald-400 text-xs mt-2">
-              <CreditCard className="w-3.5 h-3.5" />
-              <span>Tarjeta & Transferencia</span>
-            </div>
-          </div>
-
-          <div className="glass-card rounded-2xl p-5 border border-slate-800 hover:border-slate-700 transition-all duration-300">
-            <div className="flex items-center justify-between">
-              <span className="text-xs font-medium text-slate-400">Seguridad Multi-Tenant</span>
-              <div className="p-2 rounded-xl bg-purple-500/10 text-purple-400 border border-purple-500/20">
-                <Shield className="w-5 h-5" />
-              </div>
-            </div>
-            <p className="text-2xl font-bold text-white mt-3">RBAC Activo</p>
-            <div className="flex items-center space-x-1 text-purple-400 text-xs mt-2">
-              <Lock className="w-3.5 h-3.5" />
-              <span>Reglas de Firestore /clinics</span>
-            </div>
-          </div>
-        </section>
-
-        {/* Tab Navigation */}
-        <section className="space-y-6">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-800 pb-4">
-            <div className="flex space-x-2 bg-slate-900/90 p-1 rounded-xl border border-slate-800">
-              <button
-                onClick={() => setActiveTab("patients")}
-                className={`px-4 py-2 rounded-lg text-xs font-semibold transition-all duration-200 flex items-center space-x-2 ${
-                  activeTab === "patients"
-                    ? "bg-gradient-to-r from-cyan-500 to-blue-600 text-white shadow-md"
-                    : "text-slate-400 hover:text-slate-200 hover:bg-slate-800/50"
-                }`}
-              >
-                <Users className="w-4 h-4" />
-                <span>Pacientes</span>
-              </button>
-
-              <button
-                onClick={() => setActiveTab("quotes")}
-                className={`px-4 py-2 rounded-lg text-xs font-semibold transition-all duration-200 flex items-center space-x-2 ${
-                  activeTab === "quotes"
-                    ? "bg-gradient-to-r from-cyan-500 to-blue-600 text-white shadow-md"
-                    : "text-slate-400 hover:text-slate-200 hover:bg-slate-800/50"
-                }`}
-              >
-                <FileText className="w-4 h-4" />
-                <span>Cotizaciones</span>
-              </button>
-
-              <button
-                onClick={() => setActiveTab("accounting")}
-                className={`px-4 py-2 rounded-lg text-xs font-semibold transition-all duration-200 flex items-center space-x-2 ${
-                  activeTab === "accounting"
-                    ? "bg-gradient-to-r from-cyan-500 to-blue-600 text-white shadow-md"
-                    : "text-slate-400 hover:text-slate-200 hover:bg-slate-800/50"
-                }`}
-              >
-                <DollarSign className="w-4 h-4" />
-                <span>Contabilidad</span>
-              </button>
-            </div>
-
-            <div className="flex items-center space-x-3">
+            <div className="flex items-center gap-3">
               <div className="relative flex-1 sm:w-64">
                 <Search className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
                 <input
                   type="text"
-                  placeholder="Buscar en el sistema..."
-                  className="w-full bg-slate-900 border border-slate-800 rounded-xl pl-9 pr-4 py-2 text-xs text-slate-200 placeholder-slate-500 focus:outline-none focus:border-cyan-500 transition-colors"
+                  placeholder="Buscar pacientes, cotizaciones..."
+                  className="w-full bg-slate-900 border border-slate-800 rounded-xl pl-9 pr-4 py-2.5 text-xs text-slate-200 placeholder-slate-500 focus:outline-none focus:border-cyan-500 transition-colors"
                 />
               </div>
 
-              <button className="px-3.5 py-2 rounded-xl bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-semibold text-xs transition-colors flex items-center space-x-1.5 shadow-lg shadow-cyan-500/20">
+              <button className="min-h-[44px] px-4 py-2.5 rounded-xl bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-semibold text-xs transition-all duration-200 flex items-center gap-1.5 shadow-lg shadow-cyan-500/20 cursor-pointer">
                 <Plus className="w-4 h-4" />
-                <span>Nuevo</span>
+                <span>Nuevo Registro</span>
               </button>
             </div>
           </div>
 
-          {/* Tab Content: Pacientes */}
+          {(activeTab === "dashboard" || activeTab === "patients") && (
+            <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+              <div className="glass-card rounded-2xl p-5 border border-slate-800 hover:border-slate-700 transition-all duration-300">
+                <div className="flex items-center justify-between">
+                  <span className="text-xs font-medium text-slate-400">Total Pacientes</span>
+                  <div className="p-2 rounded-xl bg-blue-500/10 text-blue-400 border border-blue-500/20">
+                    <Users className="w-5 h-5" />
+                  </div>
+                </div>
+                <p className="text-2xl font-bold text-white mt-3">{samplePatients.length}</p>
+                <div className="flex items-center space-x-1 text-emerald-400 text-xs mt-2">
+                  <TrendingUp className="w-3.5 h-3.5" />
+                  <span>+12% este mes</span>
+                </div>
+              </div>
+
+              <div className="glass-card rounded-2xl p-5 border border-slate-800 hover:border-slate-700 transition-all duration-300">
+                <div className="flex items-center justify-between">
+                  <span className="text-xs font-medium text-slate-400">Cotizaciones Creadas</span>
+                  <div className="p-2 rounded-xl bg-amber-500/10 text-amber-400 border border-amber-500/20">
+                    <FileText className="w-5 h-5" />
+                  </div>
+                </div>
+                <p className="text-2xl font-bold text-white mt-3">{sampleQuotes.length}</p>
+                <div className="flex items-center space-x-1 text-slate-400 text-xs mt-2">
+                  <Clock className="w-3.5 h-3.5 text-amber-400" />
+                  <span>1 Aprobada · 1 Enviada</span>
+                </div>
+              </div>
+
+              <div className="glass-card rounded-2xl p-5 border border-slate-800 hover:border-slate-700 transition-all duration-300">
+                <div className="flex items-center justify-between">
+                  <span className="text-xs font-medium text-slate-400">Ingresos Mensuales</span>
+                  <div className="p-2 rounded-xl bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+                    <DollarSign className="w-5 h-5" />
+                  </div>
+                </div>
+                <p className="text-2xl font-bold text-white mt-3">$25,500.00 MXN</p>
+                <div className="flex items-center space-x-1 text-emerald-400 text-xs mt-2">
+                  <CreditCard className="w-3.5 h-3.5" />
+                  <span>Tarjeta & Transferencia</span>
+                </div>
+              </div>
+
+              <div className="glass-card rounded-2xl p-5 border border-slate-800 hover:border-slate-700 transition-all duration-300">
+                <div className="flex items-center justify-between">
+                  <span className="text-xs font-medium text-slate-400">Citas de Hoy</span>
+                  <div className="p-2 rounded-xl bg-cyan-500/10 text-cyan-400 border border-cyan-500/20">
+                    <Calendar className="w-5 h-5" />
+                  </div>
+                </div>
+                <p className="text-2xl font-bold text-white mt-3">4 Consultas</p>
+                <div className="flex items-center space-x-1 text-cyan-400 text-xs mt-2">
+                  <CheckCircle2 className="w-3.5 h-3.5" />
+                  <span>2 Confirmadas</span>
+                </div>
+              </div>
+            </section>
+          )}
+
           {activeTab === "patients" && (
             <div className="glass-card rounded-2xl border border-slate-800 overflow-hidden shadow-xl">
               <div className="p-5 border-b border-slate-800/80 flex items-center justify-between">
                 <div>
                   <h3 className="font-semibold text-sm text-white">Directorio de Pacientes del Consultorio</h3>
-                  <p className="text-xs text-slate-400 mt-0.5">Almacenados bajo la colección tenant aislada</p>
+                  <p className="text-xs text-slate-400 mt-0.5">Listado completo de pacientes registrados</p>
                 </div>
                 <span className="text-xs text-slate-400 font-mono">Total: {samplePatients.length}</span>
               </div>
@@ -444,7 +324,7 @@ export default function App() {
                           {new Date(pat.createdAt).toLocaleDateString("es-MX")}
                         </td>
                         <td className="p-4 text-right">
-                          <button className="text-cyan-400 hover:text-cyan-300 font-semibold text-xs flex items-center space-x-1 ml-auto">
+                          <button className="text-cyan-400 hover:text-cyan-300 font-semibold text-xs flex items-center space-x-1 ml-auto cursor-pointer">
                             <span>Ver Historial</span>
                             <ExternalLink className="w-3 h-3" />
                           </button>
@@ -457,7 +337,6 @@ export default function App() {
             </div>
           )}
 
-          {/* Tab Content: Cotizaciones */}
           {activeTab === "quotes" && (
             <div className="space-y-4">
               {sampleQuotes.map((quote) => (
@@ -513,18 +392,12 @@ export default function App() {
             </div>
           )}
 
-          {/* Tab Content: Contabilidad */}
           {activeTab === "accounting" && (
             <div className="glass-card rounded-2xl border border-slate-800 overflow-hidden shadow-xl p-6 space-y-6">
               <div className="flex items-center justify-between border-b border-slate-800 pb-4">
                 <div>
-                  <h3 className="font-semibold text-sm text-white">Registro de Ingresos & Egresos del Consultorio</h3>
-                  <p className="text-xs text-slate-400 mt-0.5">Módulo financiero restringido con RBAC para Contadores y Admins</p>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <span className="text-xs px-2.5 py-1 rounded-md bg-purple-500/10 text-purple-400 border border-purple-500/20 font-mono">
-                    RBAC: Accountant / Admin
-                  </span>
+                  <h3 className="font-semibold text-sm text-white">Registro de Ingresos & Egresos</h3>
+                  <p className="text-xs text-slate-400 mt-0.5">Control contable y reporte de utilidades del consultorio</p>
                 </div>
               </div>
 
@@ -567,12 +440,89 @@ export default function App() {
               </div>
             </div>
           )}
-        </section>
-      </main>
 
-      {/* Footer */}
-      <footer className="border-t border-slate-900 bg-slate-950 py-6 text-center text-xs text-slate-500">
-        <p>© 2026 CRM Odontológico Multi-Tenant · React 18, Vite & Firebase Cloud Infrastructure</p>
+          {(activeTab === "dashboard" || activeTab === "schedule") && (
+            <div className="glass-card rounded-2xl p-6 border border-slate-800 space-y-4">
+              <h3 className="font-semibold text-sm text-white flex items-center gap-2">
+                <Calendar className="w-4 h-4 text-cyan-400" />
+                <span>Próximas Citas Médicas</span>
+              </h3>
+              <div className="space-y-3">
+                <div className="flex items-center justify-between p-3 bg-slate-900/60 rounded-xl border border-slate-800">
+                  <div>
+                    <p className="text-xs font-semibold text-slate-200">Ana María Lucero - Limpieza & Carillas</p>
+                    <p className="text-[11px] text-slate-400">Hoy · 16:00 hrs</p>
+                  </div>
+                  <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">
+                    Confirmada
+                  </span>
+                </div>
+                <div className="flex items-center justify-between p-3 bg-slate-900/60 rounded-xl border border-slate-800">
+                  <div>
+                    <p className="text-xs font-semibold text-slate-200">Carlos Eduardo Silva - Valoración Ortodoncia</p>
+                    <p className="text-[11px] text-slate-400">Mañana · 10:30 hrs</p>
+                  </div>
+                  <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-400 border border-amber-500/30">
+                    Pendiente
+                  </span>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {activeTab === "settings" && (
+            <div className="glass-card rounded-2xl p-6 border border-slate-800 space-y-6">
+              <div className="border-b border-slate-800 pb-4">
+                <h3 className="font-semibold text-sm text-white flex items-center gap-2">
+                  <Settings className="w-4 h-4 text-cyan-400" />
+                  <span>Configuración de Marca & Consultorio</span>
+                </h3>
+                <p className="text-xs text-slate-400 mt-0.5">
+                  Personalice los datos que se muestran en sus cotizaciones y expedientes
+                </p>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
+                <div>
+                  <label className="block text-slate-400 mb-1">Nombre del Consultorio</label>
+                  <input
+                    type="text"
+                    defaultValue={currentClinic.name}
+                    className="w-full bg-slate-900 border border-slate-800 rounded-xl px-3 py-2 text-slate-200"
+                  />
+                </div>
+                <div>
+                  <label className="block text-slate-400 mb-1">Teléfono de Contacto</label>
+                  <input
+                    type="text"
+                    defaultValue={currentClinic.phone}
+                    className="w-full bg-slate-900 border border-slate-800 rounded-xl px-3 py-2 text-slate-200"
+                  />
+                </div>
+                <div>
+                  <label className="block text-slate-400 mb-1">Correo Electrónico</label>
+                  <input
+                    type="email"
+                    defaultValue={currentClinic.email}
+                    className="w-full bg-slate-900 border border-slate-800 rounded-xl px-3 py-2 text-slate-200"
+                  />
+                </div>
+                <div>
+                  <label className="block text-slate-400 mb-1">Cédula Profesional</label>
+                  <input
+                    type="text"
+                    defaultValue="Céd. Prof. 129084"
+                    className="w-full bg-slate-900 border border-slate-800 rounded-xl px-3 py-2 text-slate-200"
+                  />
+                </div>
+              </div>
+            </div>
+          )}
+        </main>
+      </div>
+
+      <footer className="border-t border-slate-900 bg-slate-950 py-4 text-center text-xs text-slate-500">
+        <p>© 2026 CRM Odontológico · Dra. Daniela Cázares</p>
       </footer>
       <IncognitoBanner />
     </div>
