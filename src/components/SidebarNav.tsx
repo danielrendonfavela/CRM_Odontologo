@@ -9,13 +9,12 @@ import {
   ChevronLeft,
   ChevronRight,
   X,
-  type LucideIcon,
 } from "lucide-react";
 
 export interface NavItem {
   id: string;
   label: string;
-  icon: string;
+  icon: React.ComponentType<{ className?: string }>;
   badgeCount?: number;
 }
 
@@ -29,22 +28,13 @@ export interface SidebarNavProps {
 }
 
 const NAV_ITEMS: NavItem[] = [
-  { id: "dashboard", label: "Inicio", icon: "LayoutDashboard" },
-  { id: "patients", label: "Pacientes", icon: "Users" },
-  { id: "quotes", label: "Cotizaciones", icon: "FileText" },
-  { id: "schedule", label: "Agenda", icon: "Calendar" },
-  { id: "accounting", label: "Contabilidad", icon: "DollarSign" },
-  { id: "settings", label: "Ajustes", icon: "Settings" },
+  { id: "dashboard", label: "Inicio", icon: LayoutDashboard },
+  { id: "patients", label: "Pacientes", icon: Users, badgeCount: 24 },
+  { id: "quotes", label: "Cotizaciones", icon: FileText },
+  { id: "schedule", label: "Agenda", icon: Calendar, badgeCount: 4 },
+  { id: "accounting", label: "Contabilidad", icon: DollarSign },
+  { id: "settings", label: "Ajustes", icon: Settings },
 ];
-
-const ICON_MAP: Record<string, LucideIcon> = {
-  LayoutDashboard,
-  Users,
-  FileText,
-  Calendar,
-  DollarSign,
-  Settings,
-};
 
 export const SidebarNav: React.FC<SidebarNavProps> = ({
   activeTab,
@@ -54,97 +44,112 @@ export const SidebarNav: React.FC<SidebarNavProps> = ({
   isOpenMobile = false,
   onCloseMobile,
 }) => {
-  const renderNavList = (isMobileView = false) => (
-    <ul className="space-y-1.5 px-3 py-4">
-      {NAV_ITEMS.map((item) => {
-        const IconComponent = ICON_MAP[item.icon] || LayoutDashboard;
-        const isActive = activeTab === item.id;
-        const showLabel = isMobileView || !isCollapsed;
+  const content = (
+    <div className="flex flex-col h-full bg-[#080C0E] text-slate-200 border-r border-white/[0.08] select-none">
+      {/* Navigation List */}
+      <nav className="flex-1 py-4 px-3 space-y-1.5 overflow-y-auto">
+        {NAV_ITEMS.map((item) => {
+          const Icon = item.icon;
+          const isActive = activeTab === item.id;
 
-        const btnClass =
-          "w-full min-h-[44px] px-3.5 py-2.5 rounded-xl text-xs font-medium transition-all duration-200 cursor-pointer flex items-center gap-3 " +
-          (isActive
-            ? "bg-slate-800 text-cyan-400 border border-cyan-500/30 shadow-md shadow-cyan-500/10 font-semibold"
-            : "text-slate-400 hover:text-slate-200 hover:bg-slate-800/50");
-
-        const iconClass = "w-5 h-5 shrink-0 " + (isActive ? "text-cyan-400" : "text-slate-400");
-
-        return (
-          <li key={item.id}>
+          return (
             <button
+              key={item.id}
               type="button"
               onClick={() => {
                 onTabChange(item.id);
-                if (isMobileView && onCloseMobile) onCloseMobile();
+                if (onCloseMobile) onCloseMobile();
               }}
-              className={btnClass}
-              title={isCollapsed && !isMobileView ? item.label : undefined}
+              title={item.label}
+              className={`w-full min-h-[44px] px-3.5 py-2.5 rounded-xl flex items-center gap-3.5 text-xs font-medium transition-all duration-150 cursor-pointer ${
+                isActive
+                  ? "bg-[#D8C593]/10 text-[#D8C593] font-semibold border-l-2 border-[#D8C593] shadow-sm shadow-black/20"
+                  : "text-slate-400 hover:text-slate-200 hover:bg-white/[0.04]"
+              }`}
             >
-              <IconComponent className={iconClass} />
-              {showLabel && <span className="truncate">{item.label}</span>}
-              {item.badgeCount !== undefined && showLabel && (
-                <span className="ml-auto text-[10px] font-bold px-2 py-0.5 rounded-full bg-cyan-500/20 text-cyan-400 border border-cyan-500/30">
-                  {item.badgeCount}
-                </span>
+              <Icon
+                className={`w-5 h-5 shrink-0 transition-colors ${
+                  isActive ? "text-[#D8C593]" : "text-slate-400 group-hover:text-slate-200"
+                }`}
+              />
+              {!isCollapsed && (
+                <div className="flex-1 flex items-center justify-between truncate">
+                  <span className="truncate">{item.label}</span>
+                  {item.badgeCount !== undefined && (
+                    <span
+                      className={`text-[10px] px-2 py-0.5 rounded-full font-semibold ${
+                        isActive
+                          ? "bg-[#D8C593]/20 text-[#D8C593]"
+                          : "bg-white/[0.06] text-slate-400"
+                      }`}
+                    >
+                      {item.badgeCount}
+                    </span>
+                  )}
+                </div>
               )}
             </button>
-          </li>
-        );
-      })}
-    </ul>
-  );
+          );
+        })}
+      </nav>
 
-  const asideClass =
-    "hidden lg:flex flex-col bg-slate-900/90 backdrop-blur-xl border-r border-slate-800 transition-all duration-200 " +
-    (isCollapsed ? "w-20" : "w-64");
+      {/* Collapse Toggle Footer Button */}
+      {onToggleCollapse && (
+        <div className="p-3 border-t border-white/[0.08]">
+          <button
+            type="button"
+            onClick={onToggleCollapse}
+            className="w-full min-h-[44px] px-3 py-2 rounded-xl text-slate-400 hover:text-slate-200 hover:bg-white/[0.04] text-xs font-medium flex items-center gap-3 transition-colors cursor-pointer"
+            aria-label={isCollapsed ? "Expandir sidebar" : "Colapsar sidebar"}
+          >
+            {isCollapsed ? (
+              <ChevronRight className="w-5 h-5 shrink-0 mx-auto" />
+            ) : (
+              <>
+                <ChevronLeft className="w-5 h-5 shrink-0" />
+                <span>Colapsar menú</span>
+              </>
+            )}
+          </button>
+        </div>
+      )}
+    </div>
+  );
 
   return (
     <>
+      {/* Desktop Sidebar */}
+      <aside
+        className={`hidden lg:block h-[calc(100vh-4rem)] sticky top-16 transition-all duration-200 ${
+          isCollapsed ? "w-20" : "w-64"
+        }`}
+      >
+        {content}
+      </aside>
+
       {/* Mobile Drawer Overlay */}
       {isOpenMobile && (
-        <div className="fixed inset-0 z-50 lg:hidden flex">
+        <div className="lg:hidden fixed inset-0 z-50 flex">
           <div
-            className="fixed inset-0 bg-slate-950/80 backdrop-blur-sm transition-opacity"
+            className="fixed inset-0 bg-black/75 backdrop-blur-sm transition-opacity"
             onClick={onCloseMobile}
-            data-testid="mobile-backdrop"
           />
-          <div className="relative w-72 max-w-[80vw] bg-slate-900/95 backdrop-blur-xl border-r border-white/10 h-full flex flex-col z-10 shadow-2xl">
-            <div className="h-16 px-4 flex items-center justify-between border-b border-slate-800">
-              <span className="font-bold text-sm text-white">Navegación</span>
+          <div className="relative flex-1 max-w-xs w-full bg-[#080C0E] shadow-2xl z-10 flex flex-col">
+            <div className="p-4 border-b border-white/[0.08] flex items-center justify-between">
+              <span className="font-bold text-sm text-slate-100">Navegación</span>
               <button
                 type="button"
                 onClick={onCloseMobile}
-                className="p-2 min-h-[44px] min-w-[44px] flex items-center justify-center rounded-lg text-slate-400 hover:text-white cursor-pointer transition-colors"
                 aria-label="Cerrar menú"
+                className="p-2 min-h-[44px] text-slate-400 hover:text-white cursor-pointer"
               >
                 <X className="w-5 h-5" />
               </button>
             </div>
-            <nav className="flex-1 overflow-y-auto">{renderNavList(true)}</nav>
+            <div className="flex-1 overflow-y-auto">{content}</div>
           </div>
         </div>
       )}
-
-      {/* Desktop / Tablet Sidebar */}
-      <aside className={asideClass}>
-        <nav className="flex-1 overflow-y-auto">{renderNavList(false)}</nav>
-
-        {onToggleCollapse && (
-          <div className="p-3 border-t border-slate-800">
-            <button
-              type="button"
-              onClick={onToggleCollapse}
-              aria-label={isCollapsed ? "Expandir sidebar" : "Colapsar sidebar"}
-              className="w-full min-h-[44px] px-3 py-2 rounded-xl text-xs text-slate-400 hover:text-white hover:bg-slate-800/60 cursor-pointer transition-all duration-200 flex items-center justify-center gap-2"
-            >
-              {isCollapsed ? <ChevronRight className="w-5 h-5" /> : <ChevronLeft className="w-5 h-5" />}
-              {!isCollapsed && <span>Colapsar menú</span>}
-            </button>
-          </div>
-        )}
-      </aside>
     </>
   );
 };
-
-export const SidebarNavResponsive = SidebarNav;
