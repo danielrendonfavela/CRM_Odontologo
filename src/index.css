@@ -1,50 +1,65 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700&family=Playfair+Display:wght@500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Lexend:wght@400;500;600;700&family=Source+Sans+3:wght@400;500;600;700&display=swap');
 @import "tailwindcss";
 
 /* ==========================================================================
    SYSTEM DESIGN SYSTEM & THEME TOKENS (UI UX PRO MAX)
    ========================================================================== */
 
+:root {
+  --color-success: #22C55E;
+  --color-success-bg: rgba(34, 197, 94, 0.10);
+  --color-success-border: rgba(34, 197, 94, 0.20);
+  --color-warning: #F59E0B;
+  --color-warning-bg: rgba(245, 158, 11, 0.10);
+  --color-warning-border: rgba(245, 158, 11, 0.20);
+  --color-danger: #F43F5E;
+  --color-danger-bg: rgba(244, 63, 94, 0.10);
+  --color-danger-border: rgba(244, 63, 94, 0.20);
+  --color-info: #38BDF8;
+  --color-info-bg: rgba(56, 189, 248, 0.10);
+  --color-info-border: rgba(56, 189, 248, 0.20);
+}
+
 :root, [data-theme="gold"] {
-  --bg-app: #080C0E;
-  --bg-surface: #0E1418;
-  --bg-card: rgba(22, 30, 36, 0.85);
+  --bg-app: #0B0D10;
+  --bg-surface: #12161B;
+  --bg-card: rgba(24, 29, 35, 0.85);
   --color-primary: #F1F5F9;
   --color-muted: #94A3B8;
   --color-accent: #D8C593;
   --color-accent-hover: #E8D8A7;
   --color-accent-glow: rgba(216, 197, 147, 0.25);
   --border-glass: rgba(216, 197, 147, 0.20);
-  --font-heading: 'Plus Jakarta Sans', sans-serif;
-  --font-body: 'Inter', sans-serif;
+  --font-heading: 'Lexend', sans-serif;
+  --font-body: 'Source Sans 3', sans-serif;
 }
 
 [data-theme="emerald"] {
-  --bg-app: #040A10;
-  --bg-surface: #091220;
-  --bg-card: rgba(15, 28, 46, 0.85);
+  --bg-app: #05100C;
+  --bg-surface: #0A1712;
+  --bg-card: rgba(15, 32, 26, 0.85);
   --color-primary: #F8FAFC;
   --color-muted: #94A3B8;
   --color-accent: #10B981;
   --color-accent-hover: #34D399;
   --color-accent-glow: rgba(16, 185, 129, 0.28);
-  --border-glass: rgba(16, 185, 129, 0.25);
-  --font-heading: 'Outfit', sans-serif;
-  --font-body: 'Inter', sans-serif;
+  --border-glass: rgba(16, 185, 129, 0.22);
+  --font-heading: 'Lexend', sans-serif;
+  --font-body: 'Source Sans 3', sans-serif;
 }
 
 [data-theme="editorial"] {
-  --bg-app: #0F0D15;
-  --bg-surface: #171422;
-  --bg-card: rgba(28, 24, 42, 0.85);
-  --color-primary: #FAF5FF;
-  --color-muted: #D8B4FE;
-  --color-accent: #EAB308;
-  --color-accent-hover: #FACC15;
-  --color-accent-glow: rgba(234, 179, 8, 0.30);
-  --border-glass: rgba(234, 179, 8, 0.25);
-  --font-heading: 'Playfair Display', serif;
-  --font-body: 'Inter', sans-serif;
+  --bg-app: #120D0F;
+  --bg-surface: #1B1417;
+  --bg-card: rgba(32, 24, 27, 0.85);
+  --color-primary: #FBF4EF;
+  --color-muted: #C9A899;
+  --color-accent: #E8A87C;
+  --color-accent-hover: #F2BC98;
+  --color-accent-glow: rgba(232, 168, 124, 0.28);
+  --border-glass: rgba(232, 168, 124, 0.22);
+  --font-heading: 'Lexend', sans-serif;
+  --font-body: 'Source Sans 3', sans-serif;
 }
 
 body {
@@ -100,4 +115,52 @@ h1, h2, h3, h4, h5, h6 {
 
 .theme-accent-border {
   border-color: var(--color-accent) !important;
+}
+
+.theme-success-text {
+  color: var(--color-success) !important;
+}
+
+.theme-success-bg {
+  background-color: var(--color-success-bg) !important;
+}
+
+.theme-success-border {
+  border-color: var(--color-success-border) !important;
+}
+
+.theme-warning-text {
+  color: var(--color-warning) !important;
+}
+
+.theme-warning-bg {
+  background-color: var(--color-warning-bg) !important;
+}
+
+.theme-warning-border {
+  border-color: var(--color-warning-border) !important;
+}
+
+.theme-danger-text {
+  color: var(--color-danger) !important;
+}
+
+.theme-danger-bg {
+  background-color: var(--color-danger-bg) !important;
+}
+
+.theme-danger-border {
+  border-color: var(--color-danger-border) !important;
+}
+
+.theme-info-text {
+  color: var(--color-info) !important;
+}
+
+.theme-info-bg {
+  background-color: var(--color-info-bg) !important;
+}
+
+.theme-info-border {
+  border-color: var(--color-info-border) !important;
 }
