@@ -108,3 +108,23 @@ Todo componente visual DEBE alinearse al sistema de diseño **UI/UX Pro Max**:
    - 📅 **Agenda & Citas**
    - 💰 **Contabilidad & Finanzas**
    - ⚙️ **Configuración del Consultorio**
+
+---
+
+## ☁️ 6. Estrategia de Entornos Firebase (Proyecto Único MVP ➔ Upgrade a Dual UAT/PROD)
+
+### 6.1 Estado Actual (Proyecto Único MVP / Desarrollo)
+- **1 Solo Proyecto Firebase (`crm-odontologo-app-prod`):** Se utiliza un único proyecto de Firebase para desarrollo, pruebas y MVP.
+- **Aislamiento Multi-Tenant Lógico:** Todos los consultorios comparten la misma infraestructura de Firebase, pero sus datos se aíslan estrictamente en Firestore bajo la ruta `/clinics/{clinicId}` según las reglas de seguridad (`firestore.rules`).
+- **Pruebas de Desarrollo:** Las pruebas en localhost y trabajo de subagentes utilizan cuentas demo (`nuevo@consultorio.com`, `dra.daniela@cazaresdental.com`).
+
+### 6.2 Criterios para Activar el Upgrade a 2 Proyectos (`UAT` + `PROD`)
+Se deberá desglosar Firebase en 2 proyectos independientes (`crm-odontologo-uat` y `crm-odontologo-prod`) cuando se cumpla cualquiera de las siguientes condiciones:
+
+1. **Lanzamiento Comercial a Producción:** Cuando existan consultorios médicos reales pagando la suscripción y registrando información clínica/financiera real.
+2. **Pipelines de CI/CD Desplegados:** Cuando se configure un pipeline automatizado de despegue continuo (GitHub Actions ➔ Firebase Hosting Staging Channel).
+
+### 6.3 Procedimiento de Upgrade (Futuro)
+- `crm-odontologo-uat`: Vinculado a `.env.development` (para desarrollo local y pruebas de subagentes).
+- `crm-odontologo-prod`: Vinculado a `.env.production` (para despliegues finales de clientes reales).
+
