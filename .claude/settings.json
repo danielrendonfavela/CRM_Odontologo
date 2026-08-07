@@ -1,0 +1,24 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(git status*)",
+      "Bash(git diff*)",
+      "Bash(git log*)",
+      "Bash(npm run test*)",
+      "Bash(npm test*)",
+      "Bash(npm run build*)",
+      "Bash(npm run lint*)",
+      "Bash(npm run dev*)",
+      "Bash(tsc *)",
+      "PowerShell(git status*)",
+      "PowerShell(git diff*)",
+      "PowerShell(git log*)",
+      "PowerShell(npm run test*)",
+      "PowerShell(npm test*)",
+      "PowerShell(npm run build*)",
+      "PowerShell(npm run lint*)",
+      "PowerShell(npm run dev*)",
+      "PowerShell(tsc *)"
+    ]
+  }
+}
