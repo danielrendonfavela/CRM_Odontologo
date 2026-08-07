@@ -1,4 +1,4 @@
-﻿import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { authService, AuthUser } from "../services/authService";
 
 export interface AuthState {
@@ -53,7 +53,19 @@ export function useAuth(): UseAuthReturn {
   };
 
   useEffect(() => {
+    let isSubscribed = true;
+
+    // Safety fallback timeout: Ensure isLoading is resolved within 1.5s max
+    const timer = setTimeout(() => {
+      if (isSubscribed) {
+        setAuthState((prev) => (prev.isLoading ? { ...prev, isLoading: false } : prev));
+      }
+    }, 1500);
+
     const unsubscribe = authService.onAuthStateChanged((user) => {
+      clearTimeout(timer);
+      if (!isSubscribed) return;
+
       if (!user) {
         setAuthState({
           user: null,
@@ -72,7 +84,11 @@ export function useAuth(): UseAuthReturn {
       }
     });
 
-    return () => unsubscribe();
+    return () => {
+      isSubscribed = false;
+      clearTimeout(timer);
+      unsubscribe();
+    };
   }, []);
 
   const signInWithGoogle = useCallback(async (): Promise<AuthUser | null> => {
