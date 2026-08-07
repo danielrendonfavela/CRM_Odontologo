@@ -8,27 +8,27 @@
 :root, [data-theme="gold"] {
   --bg-app: #080C0E;
   --bg-surface: #0E1418;
-  --bg-card: rgba(18, 25, 30, 0.75);
+  --bg-card: rgba(22, 30, 36, 0.85);
   --color-primary: #F1F5F9;
   --color-muted: #94A3B8;
   --color-accent: #D8C593;
   --color-accent-hover: #E8D8A7;
-  --color-accent-glow: rgba(216, 197, 147, 0.18);
-  --border-glass: rgba(216, 197, 147, 0.15);
+  --color-accent-glow: rgba(216, 197, 147, 0.25);
+  --border-glass: rgba(216, 197, 147, 0.20);
   --font-heading: 'Plus Jakarta Sans', sans-serif;
   --font-body: 'Inter', sans-serif;
 }
 
 [data-theme="emerald"] {
-  --bg-app: #050B14;
-  --bg-surface: #0A1322;
-  --bg-card: rgba(13, 24, 41, 0.80);
+  --bg-app: #040A10;
+  --bg-surface: #091220;
+  --bg-card: rgba(15, 28, 46, 0.85);
   --color-primary: #F8FAFC;
   --color-muted: #94A3B8;
   --color-accent: #10B981;
   --color-accent-hover: #34D399;
-  --color-accent-glow: rgba(16, 185, 129, 0.20);
-  --border-glass: rgba(16, 185, 129, 0.18);
+  --color-accent-glow: rgba(16, 185, 129, 0.28);
+  --border-glass: rgba(16, 185, 129, 0.25);
   --font-heading: 'Outfit', sans-serif;
   --font-body: 'Inter', sans-serif;
 }
@@ -36,13 +36,13 @@
 [data-theme="editorial"] {
   --bg-app: #0F0D15;
   --bg-surface: #171422;
-  --bg-card: rgba(26, 22, 38, 0.80);
+  --bg-card: rgba(28, 24, 42, 0.85);
   --color-primary: #FAF5FF;
-  --color-muted: #A855F7;
+  --color-muted: #D8B4FE;
   --color-accent: #EAB308;
   --color-accent-hover: #FACC15;
-  --color-accent-glow: rgba(234, 179, 8, 0.22);
-  --border-glass: rgba(168, 85, 247, 0.25);
+  --color-accent-glow: rgba(234, 179, 8, 0.30);
+  --border-glass: rgba(234, 179, 8, 0.25);
   --font-heading: 'Playfair Display', serif;
   --font-body: 'Inter', sans-serif;
 }
@@ -58,21 +58,46 @@ h1, h2, h3, h4, h5, h6 {
   font-family: var(--font-heading);
 }
 
+/* ==========================================================================
+   THEME OVERRIDES FOR TAILWIND UTILITIES (DESTROYS GENERIC AI SLOP)
+   ========================================================================== */
+
+.bg-slate-950 {
+  background-color: var(--bg-app) !important;
+}
+
+.bg-slate-900, .bg-slate-900\/80, .bg-slate-900\/60, .bg-slate-900\/95 {
+  background-color: var(--bg-surface) !important;
+}
+
+.bg-slate-800, .bg-slate-800\/90, .bg-slate-800\/80, .bg-slate-800\/60 {
+  background-color: var(--bg-card) !important;
+}
+
+.border-slate-800, .border-slate-700, .border-slate-700\/60, .border-slate-700\/80, .border-white\/10 {
+  border-color: var(--border-glass) !important;
+}
+
+.text-cyan-400, .text-cyan-500, .text-amber-300, .text-amber-400 {
+  color: var(--color-accent) !important;
+}
+
 .glass-card {
-  background: var(--bg-card);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border: 1px solid var(--border-glass);
+  background: var(--bg-card) !important;
+  backdrop-filter: blur(16px) !important;
+  -webkit-backdrop-filter: blur(16px) !important;
+  border: 1px solid var(--border-glass) !important;
+  box-shadow: 0 10px 30px -10px var(--color-accent-glow) !important;
 }
 
 .theme-accent-bg {
-  background-color: var(--color-accent);
+  background-color: var(--color-accent) !important;
 }
 
 .theme-accent-text {
-  color: var(--color-accent);
+  color: var(--color-accent) !important;
 }
 
 .theme-accent-border {
-  border-color: var(--color-accent);
+  border-color: var(--color-accent) !important;
 }
