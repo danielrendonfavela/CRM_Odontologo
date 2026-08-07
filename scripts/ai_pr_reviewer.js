@@ -12,7 +12,7 @@ async function runReview() {
   }
 
   console.log(`Obteniendo diff del Pull Request #${prNumber}...`);
-  const diff = execSync(`gh pr diff ${prNumber}`, { encoding: "utf-8" });
+  const diff = execSync(`gh pr diff ${prNumber}`, { encoding: "utf-8", maxBuffer: 50 * 1024 * 1024 });
 
   if (!diff || diff.trim().length === 0) {
     console.log("Diff vacío. No hay cambios para revisar.");
