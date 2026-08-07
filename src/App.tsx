@@ -5,7 +5,6 @@ import {
   DollarSign,
   Clock,
   CreditCard,
-  TrendingUp,
   ExternalLink,
   Calendar,
   Settings,
@@ -116,6 +115,9 @@ export default function App() {
     },
   ];
 
+  const approvedQuotesCount = sampleQuotes.filter((q) => q.status === "approved").length;
+  const sentQuotesCount = sampleQuotes.filter((q) => q.status === "sent").length;
+
   const sampleAccounting: AccountingRecord[] = [
     {
       id: "acc-501",
@@ -207,13 +209,6 @@ export default function App() {
                     Bienvenida de nuevo, <span className="text-[#D8C593] font-semibold">{currentUser.displayName}</span> • 4 Citas programadas para hoy
                   </p>
                 </div>
-
-                <div className="flex items-center gap-2">
-                  <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[#D8C593]/10 text-[#D8C593] border border-[#D8C593]/20 text-xs font-semibold">
-                    <span className="w-2 h-2 rounded-full bg-[#D8C593] animate-pulse" />
-                    Consultorio Activo
-                  </span>
-                </div>
               </div>
 
               {(activeTab === "dashboard" || activeTab === "patients") && (
@@ -225,10 +220,6 @@ export default function App() {
                       <Users className="w-4 h-4 text-[#D8C593]" />
                     </div>
                     <p className="text-2xl font-bold text-slate-100 mt-2">{samplePatients.length}</p>
-                    <div className="flex items-center gap-1 text-emerald-400 text-[11px] mt-1 font-medium">
-                      <TrendingUp className="w-3 h-3" />
-                      <span>+12% este mes</span>
-                    </div>
                   </div>
 
                   <div className="glass-card rounded-2xl p-4 border border-white/[0.08] hover:border-[#D8C593]/30 transition-all">
@@ -239,7 +230,10 @@ export default function App() {
                     <p className="text-2xl font-bold text-white mt-3">{sampleQuotes.length}</p>
                     <div className="flex items-center space-x-1 text-slate-400 text-xs mt-2">
                       <Clock className="w-3.5 h-3.5 text-amber-400" />
-                      <span>1 Aprobada · 1 Enviada</span>
+                      <span>
+                        {approvedQuotesCount} Aprobada{approvedQuotesCount !== 1 ? "s" : ""} ·{" "}
+                        {sentQuotesCount} Enviada{sentQuotesCount !== 1 ? "s" : ""}
+                      </span>
                     </div>
                   </div>
 
