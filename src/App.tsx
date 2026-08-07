@@ -20,8 +20,10 @@ import { SidebarNav } from "./components/SidebarNav";
 import { IncognitoBanner } from "./components/IncognitoBanner";
 import { ProtectedRoute } from "./components/ProtectedRoute";
 import { useAuth } from "./hooks/useAuth";
+import { useTheme } from "./hooks/useTheme";
 
 export default function App() {
+  const { theme, setTheme } = useTheme();
   const {
     user,
     isLoading,
@@ -174,6 +176,8 @@ export default function App() {
             clinicName={currentClinic.name}
             doctorName={currentUser.displayName}
             doctorRole="Administrador"
+            currentTheme={theme}
+            onThemeChange={setTheme}
             onOpenMobileMenu={() => setIsMobileMenuOpen(true)}
             onViewLogin={signOut}
             onViewCanvas={() => setViewMode("canvas")}
