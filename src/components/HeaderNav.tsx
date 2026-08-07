@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Activity, Menu, LogIn, Eye, UserCheck, LogOut, Palette, Check } from "lucide-react";
+import { Stethoscope, Menu, Eye, UserCheck, LogOut, Palette, Check, Search, Plus, Command } from "lucide-react";
 import { ThemeType, THEME_OPTIONS } from "../hooks/useTheme";
 
 export interface HeaderNavProps {
@@ -10,9 +10,9 @@ export interface HeaderNavProps {
   currentTheme?: ThemeType;
   onThemeChange?: (theme: ThemeType) => void;
   onOpenMobileMenu?: () => void;
-  onViewLogin?: () => void;
   onViewCanvas?: () => void;
   onSignOut?: () => void;
+  onNewRegister?: () => void;
 }
 
 export const HeaderNav: React.FC<HeaderNavProps> = ({
@@ -23,9 +23,9 @@ export const HeaderNav: React.FC<HeaderNavProps> = ({
   currentTheme = "gold",
   onThemeChange,
   onOpenMobileMenu,
-  onViewLogin,
   onViewCanvas,
   onSignOut,
+  onNewRegister,
 }) => {
   const [isThemeOpen, setIsThemeOpen] = useState(false);
 
@@ -36,14 +36,15 @@ export const HeaderNav: React.FC<HeaderNavProps> = ({
   };
 
   return (
-    <header className="border-b border-slate-800 bg-slate-900/80 backdrop-blur-xl sticky top-0 z-40">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+    <header className="border-b border-white/[0.08] bg-[#080C0E]/90 backdrop-blur-xl sticky top-0 z-40 select-none">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-4">
+        {/* Left: Branding & Mobile Menu Toggle */}
         <div className="flex items-center gap-3">
           {onOpenMobileMenu && (
             <button
               type="button"
               onClick={onOpenMobileMenu}
-              className="lg:hidden p-2 min-h-[44px] min-w-[44px] flex items-center justify-center rounded-xl bg-slate-800/80 text-slate-300 hover:text-white cursor-pointer transition-colors border border-slate-700/60"
+              className="lg:hidden p-2 min-h-[44px] min-w-[44px] flex items-center justify-center rounded-xl bg-white/[0.05] text-slate-300 hover:text-white cursor-pointer transition-colors border border-white/10"
               aria-label="Abrir menú de navegación"
             >
               <Menu className="w-5 h-5" />
@@ -51,19 +52,60 @@ export const HeaderNav: React.FC<HeaderNavProps> = ({
           )}
 
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-amber-500 to-amber-700 flex items-center justify-center shadow-lg shadow-amber-500/20 shrink-0">
-              <Activity className="w-6 h-6 text-white" />
+            <div className="w-10 h-10 rounded-xl bg-[#0E1418] border border-[#D8C593]/30 flex items-center justify-center shadow-lg shadow-black/40 shrink-0">
+              <Stethoscope className="w-5 h-5 text-[#D8C593]" />
             </div>
             <div>
-              <h1 className="font-bold text-base text-white leading-tight">CRM Odontológico</h1>
-              <p className="text-xs text-slate-400 font-medium truncate max-w-[200px] sm:max-w-xs">
+              <h1 className="font-bold text-sm sm:text-base text-slate-100 tracking-tight leading-tight">
+                CRM Odontológico
+              </h1>
+              <p className="text-xs text-slate-400 font-medium truncate max-w-[160px] sm:max-w-xs">
                 {clinicName}
               </p>
             </div>
           </div>
         </div>
 
-        <div className="flex items-center gap-3">
+        {/* Center: Command Search Bar */}
+        <div className="hidden md:flex flex-1 max-w-md items-center relative">
+          <Search className="w-4 h-4 text-slate-400 absolute left-3.5 pointer-events-none" />
+          <input
+            type="text"
+            placeholder="Buscar pacientes, expediente, cotización..."
+            className="w-full h-10 pl-9 pr-12 rounded-xl bg-white/[0.04] border border-white/10 text-xs text-slate-200 placeholder-slate-400 focus:outline-none focus:border-[#D8C593]/50 focus:ring-1 focus:ring-[#D8C593]/30 transition-all"
+          />
+          <div className="absolute right-2.5 flex items-center gap-0.5 px-1.5 py-0.5 rounded bg-white/[0.08] text-[10px] text-slate-400 border border-white/10 font-mono pointer-events-none">
+            <Command className="w-2.5 h-2.5" /> K
+          </div>
+        </div>
+
+        {/* Right: Actions, Theme Switcher & Profile */}
+        <div className="flex items-center gap-2 sm:gap-3">
+          {/* New Register Button */}
+          {onNewRegister && (
+            <button
+              type="button"
+              onClick={onNewRegister}
+              className="min-h-[44px] px-3.5 py-2 rounded-xl bg-[#D8C593] hover:bg-[#E8D8A7] active:scale-[0.98] text-slate-950 text-xs font-semibold flex items-center gap-2 shadow-md shadow-[#D8C593]/15 cursor-pointer transition-all duration-150"
+            >
+              <Plus className="w-4 h-4" />
+              <span className="hidden sm:inline">Nueva Cotización</span>
+            </button>
+          )}
+
+          {/* Canvas View */}
+          {onViewCanvas && (
+            <button
+              type="button"
+              onClick={onViewCanvas}
+              title="Previsualizar PDF Canva"
+              className="min-h-[44px] px-3 py-2 rounded-xl bg-white/[0.04] hover:bg-white/[0.08] text-xs font-medium text-slate-300 border border-white/10 flex items-center gap-1.5 cursor-pointer transition-all duration-150"
+            >
+              <Eye className="w-4 h-4 text-[#D8C593]" />
+              <span className="hidden md:inline">Ver Canvas</span>
+            </button>
+          )}
+
           {/* Theme Selector Dropdown */}
           {onThemeChange && (
             <div className="relative">
@@ -71,16 +113,16 @@ export const HeaderNav: React.FC<HeaderNavProps> = ({
                 type="button"
                 onClick={() => setIsThemeOpen(!isThemeOpen)}
                 aria-label="Cambiar tema visual"
-                title="Cambiar tema visual"
-                className="min-h-[44px] px-3 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-xs font-medium text-amber-300 border border-amber-500/30 flex items-center gap-2 cursor-pointer transition-all duration-200"
+                title="Personalidad de Marca"
+                className="min-h-[44px] px-3 py-2 rounded-xl bg-white/[0.04] hover:bg-white/[0.08] text-xs font-medium text-slate-300 border border-white/10 flex items-center gap-2 cursor-pointer transition-all duration-150"
               >
-                <Palette className="w-4 h-4 text-amber-400" />
-                <span className="hidden sm:inline">Tema</span>
+                <Palette className="w-4 h-4 text-[#D8C593]" />
+                <span className="hidden md:inline">Tema</span>
               </button>
 
               {isThemeOpen && (
-                <div className="absolute right-0 mt-2 w-56 glass-card rounded-2xl p-2 shadow-2xl z-50 border border-slate-700/80 bg-slate-900/95 backdrop-blur-xl">
-                  <p className="px-3 py-1.5 text-[11px] font-semibold text-slate-400 uppercase tracking-wider">
+                <div className="absolute right-0 mt-2 w-60 rounded-2xl p-2 shadow-2xl z-50 border border-white/15 bg-[#0E1418] backdrop-blur-2xl">
+                  <p className="px-3 py-2 text-[10px] font-semibold text-slate-400 uppercase tracking-wider border-b border-white/10 mb-1">
                     Personalidad de Marca
                   </p>
                   {THEME_OPTIONS.map((t) => (
@@ -90,15 +132,15 @@ export const HeaderNav: React.FC<HeaderNavProps> = ({
                         onThemeChange(t.id);
                         setIsThemeOpen(false);
                       }}
-                      className={`w-full px-3 py-2 rounded-xl text-left text-xs font-medium flex items-center justify-between transition-colors cursor-pointer ${
+                      className={`w-full px-3 py-2.5 rounded-xl text-left text-xs font-medium flex items-center justify-between transition-all cursor-pointer ${
                         currentTheme === t.id
-                          ? "bg-slate-800 text-white"
-                          : "text-slate-300 hover:bg-slate-800/60"
+                          ? "bg-white/[0.10] text-white border border-white/10"
+                          : "text-slate-300 hover:bg-white/[0.05]"
                       }`}
                     >
                       <div className="flex items-center gap-2.5">
                         <span
-                          className="w-3 h-3 rounded-full shrink-0 shadow-sm"
+                          className="w-3.5 h-3.5 rounded-full shrink-0 shadow-sm border border-white/20"
                           style={{ backgroundColor: t.badgeColor }}
                         />
                         <div>
@@ -106,53 +148,33 @@ export const HeaderNav: React.FC<HeaderNavProps> = ({
                           <p className="text-[10px] text-slate-400">{t.subtitle}</p>
                         </div>
                       </div>
-                      {currentTheme === t.id && <Check className="w-4 h-4 text-amber-400" />}
+                      {currentTheme === t.id && <Check className="w-4 h-4 text-[#D8C593]" />}
                     </button>
                   ))}
                 </div>
               )}
             </div>
           )}
-          {onViewLogin && (
-            <button
-              type="button"
-              onClick={onViewLogin}
-              className="min-h-[44px] px-3 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-xs font-medium text-slate-200 border border-slate-700/80 flex items-center gap-1.5 cursor-pointer transition-all duration-200"
-            >
-              <LogIn className="w-3.5 h-3.5 text-cyan-400" />
-              <span className="hidden sm:inline">Ver Login UI</span>
-            </button>
-          )}
 
-          {onViewCanvas && (
-            <button
-              type="button"
-              onClick={onViewCanvas}
-              className="min-h-[44px] px-3 py-2 rounded-xl bg-amber-500/10 hover:bg-amber-500/20 text-xs font-medium text-amber-300 border border-amber-500/20 flex items-center gap-1.5 cursor-pointer transition-all duration-200"
-            >
-              <Eye className="w-3.5 h-3.5 text-amber-400" />
-              <span className="hidden sm:inline">Ver Canvas Cotización</span>
-            </button>
-          )}
-
-          <div className="flex items-center gap-3 pl-3 border-l border-slate-800">
+          {/* Doctor Profile & Logout */}
+          <div className="flex items-center gap-2 pl-2 border-l border-white/10">
             {doctorAvatarUrl ? (
               <img
                 src={doctorAvatarUrl}
                 alt={doctorName}
-                className="w-9 h-9 rounded-full object-cover border border-cyan-500/30"
+                className="w-9 h-9 rounded-xl object-cover border border-[#D8C593]/40 shadow-sm"
               />
             ) : (
-              <div className="w-9 h-9 rounded-full bg-gradient-to-br from-purple-500 to-indigo-600 flex items-center justify-center text-white font-bold text-xs shadow-md">
+              <div className="w-9 h-9 rounded-xl bg-[#172026] border border-[#D8C593]/40 flex items-center justify-center text-[#D8C593] font-bold text-xs shadow-sm">
                 {getInitials(doctorName)}
               </div>
             )}
 
-            <div className="hidden md:block text-left">
-              <p className="text-xs font-semibold text-slate-200">{doctorName}</p>
+            <div className="hidden lg:block text-left">
+              <p className="text-xs font-semibold text-slate-200 leading-tight">{doctorName}</p>
               <div className="flex items-center gap-1">
-                <UserCheck className="w-3 h-3 text-purple-400" />
-                <span className="text-[10px] font-bold uppercase tracking-wider text-purple-400">
+                <UserCheck className="w-3 h-3 text-[#D8C593]" />
+                <span className="text-[10px] font-bold uppercase tracking-wider text-[#D8C593]">
                   {doctorRole}
                 </span>
               </div>
@@ -163,7 +185,7 @@ export const HeaderNav: React.FC<HeaderNavProps> = ({
                 type="button"
                 onClick={onSignOut}
                 title="Cerrar sesión"
-                className="p-2 min-h-[44px] min-w-[44px] flex items-center justify-center rounded-xl bg-rose-950/40 hover:bg-rose-900/60 text-rose-300 hover:text-rose-100 border border-rose-800/40 transition-colors cursor-pointer"
+                className="p-2 min-h-[44px] min-w-[44px] flex items-center justify-center rounded-xl bg-rose-500/10 hover:bg-rose-500/20 text-rose-300 border border-rose-500/20 transition-colors cursor-pointer"
                 aria-label="Cerrar sesión"
               >
                 <LogOut className="w-4 h-4" />

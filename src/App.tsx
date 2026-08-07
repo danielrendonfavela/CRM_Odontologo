@@ -5,9 +5,7 @@ import {
   DollarSign,
   Clock,
   CreditCard,
-  Plus,
   TrendingUp,
-  Search,
   ExternalLink,
   Calendar,
   Settings,
@@ -179,7 +177,6 @@ export default function App() {
             currentTheme={theme}
             onThemeChange={setTheme}
             onOpenMobileMenu={() => setIsMobileMenuOpen(true)}
-            onViewLogin={signOut}
             onViewCanvas={() => setViewMode("canvas")}
             onSignOut={signOut}
           />
@@ -194,10 +191,11 @@ export default function App() {
               onCloseMobile={() => setIsMobileMenuOpen(false)}
             />
 
-            <main className="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8 space-y-6">
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <main className="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8 space-y-6 bg-[#080C0E]">
+              {/* Header Banner & Section Title */}
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-2 border-b border-white/[0.08]">
                 <div>
-                  <h2 className="text-xl font-bold text-white capitalize">
+                  <h2 className="text-xl font-bold text-slate-100 tracking-tight capitalize">
                     {activeTab === "dashboard" && "Resumen del Consultorio"}
                     {activeTab === "patients" && "Pacientes & Expedientes"}
                     {activeTab === "quotes" && "Cotizaciones & Presupuestos"}
@@ -205,50 +203,38 @@ export default function App() {
                     {activeTab === "accounting" && "Contabilidad & Finanzas"}
                     {activeTab === "settings" && "Configuración del Consultorio"}
                   </h2>
-                  <p className="text-xs text-slate-400 mt-1">
-                    Bienvenido de nuevo, {currentUser.displayName}
+                  <p className="text-xs text-slate-400 mt-0.5">
+                    Bienvenida de nuevo, <span className="text-[#D8C593] font-semibold">{currentUser.displayName}</span> • 4 Citas programadas para hoy
                   </p>
                 </div>
 
-                <div className="flex items-center gap-3">
-                  <div className="relative flex-1 sm:w-64">
-                    <Search className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
-                    <input
-                      type="text"
-                      placeholder="Buscar pacientes, cotizaciones..."
-                      className="w-full bg-slate-900 border border-slate-800 rounded-xl pl-9 pr-4 py-2.5 text-xs text-slate-200 placeholder-slate-500 focus:outline-none focus:border-cyan-500 transition-colors"
-                    />
-                  </div>
-
-                  <button className="min-h-[44px] px-4 py-2.5 rounded-xl bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-semibold text-xs transition-all duration-200 flex items-center gap-1.5 shadow-lg shadow-cyan-500/20 cursor-pointer">
-                    <Plus className="w-4 h-4" />
-                    <span>Nuevo Registro</span>
-                  </button>
+                <div className="flex items-center gap-2">
+                  <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[#D8C593]/10 text-[#D8C593] border border-[#D8C593]/20 text-xs font-semibold">
+                    <span className="w-2 h-2 rounded-full bg-[#D8C593] animate-pulse" />
+                    Consultorio Activo
+                  </span>
                 </div>
               </div>
 
               {(activeTab === "dashboard" || activeTab === "patients") && (
-                <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
-                  <div className="glass-card rounded-2xl p-5 border border-slate-800 hover:border-slate-700 transition-all duration-300">
+                /* Unified Clinical Summary Banner (Replaces 4 Cereal Boxes) */
+                <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                  <div className="glass-card rounded-2xl p-4 border border-white/[0.08] hover:border-[#D8C593]/30 transition-all">
                     <div className="flex items-center justify-between">
                       <span className="text-xs font-medium text-slate-400">Total Pacientes</span>
-                      <div className="p-2 rounded-xl bg-blue-500/10 text-blue-400 border border-blue-500/20">
-                        <Users className="w-5 h-5" />
-                      </div>
+                      <Users className="w-4 h-4 text-[#D8C593]" />
                     </div>
-                    <p className="text-2xl font-bold text-white mt-3">{samplePatients.length}</p>
-                    <div className="flex items-center space-x-1 text-emerald-400 text-xs mt-2">
-                      <TrendingUp className="w-3.5 h-3.5" />
+                    <p className="text-2xl font-bold text-slate-100 mt-2">{samplePatients.length}</p>
+                    <div className="flex items-center gap-1 text-emerald-400 text-[11px] mt-1 font-medium">
+                      <TrendingUp className="w-3 h-3" />
                       <span>+12% este mes</span>
                     </div>
                   </div>
 
-                  <div className="glass-card rounded-2xl p-5 border border-slate-800 hover:border-slate-700 transition-all duration-300">
+                  <div className="glass-card rounded-2xl p-4 border border-white/[0.08] hover:border-[#D8C593]/30 transition-all">
                     <div className="flex items-center justify-between">
                       <span className="text-xs font-medium text-slate-400">Cotizaciones Creadas</span>
-                      <div className="p-2 rounded-xl bg-amber-500/10 text-amber-400 border border-amber-500/20">
-                        <FileText className="w-5 h-5" />
-                      </div>
+                      <FileText className="w-4 h-4 text-[#D8C593]" />
                     </div>
                     <p className="text-2xl font-bold text-white mt-3">{sampleQuotes.length}</p>
                     <div className="flex items-center space-x-1 text-slate-400 text-xs mt-2">
